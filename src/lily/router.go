@@ -6,8 +6,11 @@ package lily
 import (
 	"regexp"
 	"strings"
-	"fmt"
 )
+
+type IRouter interface {
+	Parse(string) (IController, map[string]string)
+}
 
 type Route struct {
 	route      map[string]*Route
@@ -49,16 +52,16 @@ type Router struct {
 	route Route
 }
 
-func (self *Router) Parse(path string) (IController, []string){
+func (self *Router) Parse(path string) (IController, map[string]string) {
 	subpaths := strings.Split(path, "/")
-	parameters := make([]string, 10)
+	parameters := make(map[string]string)
 	route := self.route
 	for _, subpath := range subpaths {
 		subroute, exist := route.route[subpath]
 		if !exist {
-			param := route.regex.Find(subpath)
-			if len(param) > 0 {
-				parameters = append(parameters, param)
+			match := route.regex.FindStringSubmatch(subpath)
+			if len(match) > 0 {
+				parameters[route.regex.SubexpNames()[0]] = match[0]
 				subroute = route.regexRoute
 			}
 		}
@@ -69,7 +72,7 @@ func (self *Router) Parse(path string) (IController, []string){
 	}
 	controller := route.controller
 	if controller == nil {
-		RaiseHttp404(fmt.Errorf("Page not found"))
+		RaiseHttp404()
 	}
 	return controller, parameters
 }

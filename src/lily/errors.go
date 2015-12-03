@@ -2,44 +2,60 @@
 // Copyright (c) Telefonica I+D. All rights reserved.
 //
 package lily
+import "net/http"
 
 var (
+	HTTP_400_MESSAGE = "Bad request"
+	HTTP_404_MESSAGE = "Page not found"
+	HTTP_405_MESSAGE = "Method not allowed"
 	HTTP_500_MESSAGE = "Ups!!! We f*cked up somewhere. Maybe is better this way. This website is boring anyway."
 )
 
-type IHttpError interface {
-	error
-	Message() string
-	Status()  int
-}
-
-type Http500 error
-
-func RaiseHttp500(err error) { panic(Http500(err)) }
-
-func (self *Http500) Message() string { return HTTP_500_MESSAGE }
-
-func (self *Http500) Status() int { return 500 }
-
-type Http404 error
-
-func RaiseHttp404(err error) { panic(Http404(err)) }
-
-func (self *Http404) Message() string { return self.Error() }
-
-func (self *Http404) Status() int { return 404 }
-
 type HttpError struct {
-	error
-	status int
+	Response
+	err string
 }
 
-func NewHttpError(err error, status int) *HttpError {
-	return &HttpError{err, status}
+func NewHttpError(err string, status int, message string) *HttpError {
+	return &HttpError{Response: Response{status, map[string]string, message}, err: err}
 }
 
-func RaiseHttpError(err error, status int) { panic(NewHttpError(err, status)) }
+func RaiseHttpError(err error, status int, message string) { panic(NewHttpError(err, status, message)) }
 
-func (self *HttpError) Message() string { return self.Error() }
+func (self *HttpError) Error() string {
+	return self.err
+}
 
-func (self *HttpError) Status() int { return self.status }
+type Http400 struct{
+	HttpError
+}
+
+func NewHttp400(err ...string) *Http400 {
+	return Http404{HttpError{err, http.StatusNotFound, HTTP_400_MESSAGE}}
+}
+
+func RaiseHttp400(err ...string) {
+	panic(NewHttp404())
+}
+
+type Http404 struct{
+	HttpError
+}
+
+func NewHttp404() *Http404 {
+	return Http404{HttpError{HTTP_404_MESSAGE, http.StatusNotFound, HTTP_404_MESSAGE}}
+}
+
+func RaiseHttp404() {
+	panic(NewHttp404())
+}
+
+type Http500 struct {
+	HttpError
+}
+
+func NewHttp500(err string) *Http500 {
+	return Http500{HttpError{err, http.StatusInternalServerError, HTTP_500_MESSAGE}}
+}
+
+func RaiseHttp500(err string) { panic(NewHttp500(err)) }

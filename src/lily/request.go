@@ -5,16 +5,7 @@ package lily
 
 import (
 	"net/http"
-	"time"
 )
-
-var (
-	startRequestQueue = []RequestMiddleware{}
-)
-
-func RegisterStartRequestMiddleware(middleware RequestMiddleware) {
-	startRequestQueue = append(startRequestQueue, middleware)
-}
 
 type Context map[string]interface{}
 
@@ -23,13 +14,26 @@ type Request struct {
 	Context      Context
 }
 
-func startRequest(request *http.Request) *Request {
+type IInitializer interface {
+	Start(*http.Request) *Request
+	Register(middleware RequestMiddleware)
+}
+
+type RequestInitializer struct {
+	middleware []RequestMiddleware
+}
+
+func (self *RequestInitializer) Start(request *http.Request) *Request {
 	lilyRequest := &Request{
 		Request: request,
 		Context: Context {},
 	}
-	for _, middleware := range startRequestQueue {
-		middleware(request)
+	for _, middleware := range self.middleware {
+		middleware(lilyRequest)
 	}
 	return lilyRequest
+}
+
+func (self *RequestInitializer) Register(middleware RequestMiddleware) {
+	self.middleware = append(self.middleware, middleware)
 }
