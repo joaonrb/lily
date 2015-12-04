@@ -20,5 +20,6 @@ type LogSettings struct {
 }
 
 type AccessLogSetings struct {
+	Type string `json:"type,omitempty"`
 	Path string `json:"path,omitempty"`
 }

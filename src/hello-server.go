@@ -20,7 +20,7 @@ func main() {
 			},
 		},
 		AccessLog: lily.AccessLogSetings{
-			Path: "access.log",
+			Type: "console",
 		}, 
 	}
 	lily.LoadLogger()
