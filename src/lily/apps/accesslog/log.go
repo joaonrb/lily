@@ -12,7 +12,7 @@ import (
 var log *logging.Logger
 
 func LoadAccessLogger() {
-	settings := lily.Settings
+	settings := lily.Configuration
 	if settings.AccessLog.Path == "" {
 		panic(fmt.Errorf("Trying to use accesslog middleware without configure the path for it"))
 	}

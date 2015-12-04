@@ -81,7 +81,7 @@ func Debug(message string, args ...interface{}) {
 func LoadLogger() {
 	var out io.Writer
 	loggers := make([]logging.Backend, 0)
-	for _, loggerSettings := range Settings.Loggers {
+	for _, loggerSettings := range Configuration.Loggers {
 		switch loggerSettings.Type {
 		case CONSOLE:
 			out = os.Stdout

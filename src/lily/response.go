@@ -5,7 +5,6 @@ package lily
 
 import (
 	"net/http"
-	"fmt"
 )
 
 type Response struct {
@@ -15,12 +14,12 @@ type Response struct {
 	RW      http.ResponseWriter
 }
 
-func NewResponse(rw http.ResponseWriter) *Response {
-	return &Response{200, map[string]string{}, "", rw}
+func NewResponse() *Response {
+	return &Response{http.StatusOK, map[string]string{}, "", nil}
 }
 
 type IFinalizer interface {
-	Finish(*Request, *Response,http.ResponseWriter)
+	Finish(*Request, *Response, http.ResponseWriter)
 	RegisterPosController(middleware ResponseMiddleware)
 	RegisterFinish(middleware ResponseMiddleware)
 }
@@ -30,23 +29,11 @@ type Finalizer struct {
 	finishMiddleware        []ResponseMiddleware
 }
 
+func NewFinalizer() *Finalizer {
+	return &Finalizer{[]ResponseMiddleware{}, []ResponseMiddleware{}}
+}
+
 func (self *Finalizer) Finish(request *Request, response *Response, rw http.ResponseWriter) {
-	err := recover()
-	if err != nil {
-		switch err := err.(type) {
-		case Http404:
-			response = err
-		case HttpError:
-			response = err
-			Error(err.Error())
-		case error:
-			response = Http500(err, http.StatusInternalServerError, HTTP_500_MESSAGE)
-			Error(err.Error())
-		default:
-			response = Http500(fmt.Sprintf("%x", err), http.StatusInternalServerError, HTTP_500_MESSAGE)
-			Error(response.(Http500).Error())
-		}
-	}
 	response.RW = rw
 	for _, middleware := range self.posControllerMiddleware {
 		middleware(request, response)

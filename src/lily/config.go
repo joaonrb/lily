@@ -1,10 +1,10 @@
 //
-// Copyright (c) Telefonica I+D. All rights reserved.
+// Copyright (c) João Nuno. All rights reserved.
 //
 package lily
 
 var(
-	Settings *Settings
+	Configuration *Settings
 )
 
 type Settings struct {

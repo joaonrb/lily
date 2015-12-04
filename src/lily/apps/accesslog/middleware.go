@@ -6,8 +6,8 @@ package accesslog
 import (
 	"lily"
 	"time"
-	"strconv"
-	"lily/middlewares/auth"
+	"lily/apps/auth"
+	"net/http"
 )
 
 const (
@@ -24,9 +24,9 @@ func FinishRequestForLog(request *lily.Request, response *lily.Response) {
 
 	status := response.Status
 	if status == 0 {
-		status = 404
+		status = http.StatusNotFound
 	}
-	bodyLen, _ := strconv.ParseInt(response.RW.Header().Get("Content-Length"), 10, 64)
+	bodyLen := len(response.Body)
 	user := auth.GetUser(request)
 	ip := request.RemoteAddr
 	method := request.Method
@@ -34,8 +34,8 @@ func FinishRequestForLog(request *lily.Request, response *lily.Response) {
 	httpVersion := request.Proto
 	start := request.Context[REQUEST_START].(time.Time)
 	log.Info(
-		"%s %s [%s] \"%s %s %s\" %d %d %dms", ip, user, time.Now().Format(TIME_FORMAT), method, path, httpVersion,
-		status, bodyLen, time.Since(start).Nanoseconds() / 1000000,
+		"%s %s [%s] \"%s %s %s\" %d %d %s", ip, user, time.Now().Format(TIME_FORMAT), method, path, httpVersion,
+		status, bodyLen, time.Since(start).String(),
 	)
 }
 

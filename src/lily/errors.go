@@ -11,16 +11,24 @@ var (
 	HTTP_500_MESSAGE = "Ups!!! We f*cked up somewhere. Maybe is better this way. This website is boring anyway."
 )
 
+type IHttpError interface {
+	ToResponse() *Response
+}
+
 type HttpError struct {
-	Response
+	*Response
 	err string
 }
 
-func NewHttpError(err string, status int, message string) *HttpError {
-	return &HttpError{Response: Response{status, map[string]string, message}, err: err}
+func (self *HttpError) ToResponse() *Response {
+	return self.Response
 }
 
-func RaiseHttpError(err error, status int, message string) { panic(NewHttpError(err, status, message)) }
+func NewHttpError(err string, status int, message string) *HttpError {
+	return &HttpError{Response: &Response{status, map[string]string{}, message, nil}, err: err}
+}
+
+func RaiseHttpError(err string, status int, message string) { panic(NewHttpError(err, status, message)) }
 
 func (self *HttpError) Error() string {
 	return self.err
@@ -30,12 +38,12 @@ type Http400 struct{
 	HttpError
 }
 
-func NewHttp400(err ...string) *Http400 {
-	return Http404{HttpError{err, http.StatusNotFound, HTTP_400_MESSAGE}}
+func NewHttp400(err string) *Http400 {
+	return &Http400{*NewHttpError(err, http.StatusNotFound, HTTP_400_MESSAGE)}
 }
 
-func RaiseHttp400(err ...string) {
-	panic(NewHttp404())
+func RaiseHttp400(err string) {
+	panic(NewHttp400(err))
 }
 
 type Http404 struct{
@@ -43,7 +51,7 @@ type Http404 struct{
 }
 
 func NewHttp404() *Http404 {
-	return Http404{HttpError{HTTP_404_MESSAGE, http.StatusNotFound, HTTP_404_MESSAGE}}
+	return &Http404{*NewHttpError(HTTP_404_MESSAGE, http.StatusNotFound, HTTP_404_MESSAGE)}
 }
 
 func RaiseHttp404() {
@@ -55,7 +63,7 @@ type Http500 struct {
 }
 
 func NewHttp500(err string) *Http500 {
-	return Http500{HttpError{err, http.StatusInternalServerError, HTTP_500_MESSAGE}}
+	return &Http500{*NewHttpError(err, http.StatusInternalServerError, HTTP_500_MESSAGE)}
 }
 
 func RaiseHttp500(err string) { panic(NewHttp500(err)) }

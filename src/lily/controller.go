@@ -8,19 +8,19 @@ import (
 )
 
 type IController interface {
-	Get(Request, ...map[string]string) *Response
-	Head(Request, ...map[string]string) *Response
-	Post(Request, ...map[string]string) *Response
-	Put(Request, ...map[string]string) *Response
-	Delete(Request, ...map[string]string) *Response
-	Trace(Request, ...map[string]string) *Response
+	Get(*Request, map[string]string) *Response
+	Head(*Request, map[string]string) *Response
+	Post(*Request, map[string]string) *Response
+	Put(*Request, map[string]string) *Response
+	Delete(*Request, map[string]string) *Response
+	Trace(*Request, map[string]string) *Response
 	RegisterPre(RequestMiddleware)
 	RegisterPos(ResponseMiddleware)
 	PreMiddleware() []RequestMiddleware
 	PosMiddleware() []ResponseMiddleware
 }
 
-func HandleController(controller IController, request Request, args map[string]string) *Response {
+func HandleController(controller IController, request *Request, args map[string]string) *Response {
 	for _, middleware := range controller.PreMiddleware() {
 		middleware(request)
 	}
@@ -56,32 +56,32 @@ func NewController() IController {
 	return &Controller{[]RequestMiddleware{}, []ResponseMiddleware{}}
 }
 
-func (self *Controller) Get(Request, ...map[string]string) *Response {
+func (self *Controller) Get(request *Request, args map[string]string) *Response {
 	RaiseHttp404()
 	return nil
 }
 
-func (self *Controller) Head(Request, ...map[string]string) *Response {
+func (self *Controller) Head(request *Request, args map[string]string) *Response {
 	RaiseHttp404()
 	return nil
 }
 
-func (self *Controller) Post(Request, ...map[string]string) *Response {
+func (self *Controller) Post(request *Request, args map[string]string) *Response {
 	RaiseHttp404()
 	return nil
 }
 
-func (self *Controller) Put(Request, ...map[string]string) *Response {
+func (self *Controller) Put(request *Request, args map[string]string) *Response {
 	RaiseHttp404()
 	return nil
 }
 
-func (self *Controller) Delete(Request, ...map[string]string) *Response {
+func (self *Controller) Delete(request *Request, args map[string]string) *Response {
 	RaiseHttp404()
 	return nil
 }
 
-func (self *Controller) Trace(Request, ...map[string]string) *Response {
+func (self *Controller) Trace(request *Request, args map[string]string) *Response {
 	RaiseHttp404()
 	return nil
 }

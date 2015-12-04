@@ -23,9 +23,13 @@ type RequestInitializer struct {
 	middleware []RequestMiddleware
 }
 
+func NewRequestInitializer() *RequestInitializer {
+	return &RequestInitializer{[]RequestMiddleware{}}
+}
+
 func (self *RequestInitializer) Start(request *http.Request) *Request {
 	lilyRequest := &Request{
-		Request: request,
+		Request: *request,
 		Context: Context {},
 	}
 	for _, middleware := range self.middleware {
