@@ -12,71 +12,58 @@ type IRouter interface {
 	Parse(string) (IController, map[string]string)
 }
 
-type Route struct {
-	route      map[string]*Route
-	regex      *regexp.Regexp
-	regexRoute *Route
-	controller IController
+type IRoute interface {
+	GetRoute(string, map[string]string) IRoute
+	GetController() IController
 }
 
-func NewRoute() *Route{
-	return &Route{map[string]*Route{}, nil, nil, nil}
-}
-
-func (self *Route) Controller(controller IController) {
-	self.controller = controller
-}
-
-func (self *Route) C(controller IController) {
-	self.Controller(controller)
-}
-
-func (self *Route) ParameterRoute(subpath string, route *Route) {
-	self.regex = regexp.MustCompile(subpath)
-	self.regexRoute = route
-}
-
-func (self *Route) P(subpath string, route *Route) {
-	self.ParameterRoute(subpath, route)
-}
-
-func (self *Route) Route(subpath string, route *Route) {
-	self.route[subpath] = route
-}
-
-func (self *Route) R(subpath string, route *Route) {
-	self.Route(subpath, route)
-}
+func C()
 
 type Router struct {
-	route *Route
-}
-
-func NewRouter(route *Route) *Router {
-	return &Router{route}
+	head IRoute
 }
 
 func (self *Router) Parse(path string) (IController, map[string]string) {
 	subpaths := strings.Split(path, "/")
-	parameters := make(map[string]string)
-	route := self.route
+	route := self.head
+	params := map[string]string{}
 	for _, subpath := range subpaths {
-		subroute, exist := route.route[subpath]
-		if !exist && route.regex != nil {
-			match := route.regex.FindStringSubmatch(subpath)
-			if len(match) > 0 {
-				parameters[route.regex.SubexpNames()[0]] = match[0]
-				subroute = route.regexRoute
-			}
-		}
-		route = subroute
-		if route == nil {
-			break
-		}
+		route = route.GetRoute(subpath, params)
 	}
-	
-	if route == nil || route.controller == nil {
-		RaiseHttp404()
+	if route.GetController() != nil {
+		return route.GetController(), params
 	}
-	return route.controller, parameters
+	return nil, nil
+}
+
+type Route struct {
+	controller IController
+}
+
+func (self *Route) GetController() IController {
+	return self.controller
+}
+
+type simpleRoute struct {
+	Route
+	routes map[string]IRoute
+}
+
+func (self *simpleRoute) GetRoute(route string, params map[string]string) IRoute {
+	return self.routes[route]
+}
+
+type regexRoute struct {
+	Route
+	regex *regexp.Regexp
+	route IRoute
+}
+
+func (self *regexRoute) GetRoute(route string, params map[string]string) IRoute {
+	match := self.regex.FindStringSubmatch(route)
+	if len(match) > 0 {
+		params[self.regex.SubexpNames()[0]] = match[0]
+		return self.route
+	}
+	return nil
 }
