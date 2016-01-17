@@ -6,8 +6,8 @@ package main
 import (
 	"net/http"
 	"lily"
-	"lily/hello"
 	"lily/apps/accesslog"
+	"lily/examples/hello"
 )
 
 func main() {
