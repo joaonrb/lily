@@ -51,7 +51,7 @@ func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http
 
 	controller, params := self.router.Parse(lilyRequest.URL.Path)
 	
-	response = HandleController(controller, lilyRequest, params)
+	response = controller.Handle(lilyRequest, params)
 }
 
 func (self *Handler) Initializer() IInitializer { return self.init }
