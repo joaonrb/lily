@@ -14,6 +14,25 @@ const (
 	FI_IGNORED  // In case of lines that not are meant to be executed
 )
 
+type lineIterator struct {
+	file   *os.File
+	buffer *bufio.Reader
+}
+
+func NewLineIterator(filename string, method func(line string) fiState) *lineIterator {
+
+	// Open file
+	file, err := os.Open(filename)
+	if err != nil {
+		return 0, 0, err
+	}
+	defer file.Close()
+
+	fileReader := bufio.NewReader(file)
+
+	return &lineIterator{file, fileReader}
+}
+
 func readLine(r *bufio.Reader) (string, error) {
 	var (
 		isPrefix bool = true
@@ -27,28 +46,19 @@ func readLine(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 
-func FileIterator(filename string, method func(line string) fiState) (totalLines, okLines, errLines int, err error) {
-
-	// Open file
-	file, err := os.Open(filename)
-	if err != nil {
-		return 0, 0, err
+/**
+ * Return the next line and if is last.
+ * return line string: The next line in the file.
+ * return isLast bool: If this line is the last in the file.
+ */
+func (self *lineIterator) Next() (line string, isLast bool) {
+	line, err := readLine(self.buffer)
+	if err == io.EOF {
+		return line, true
 	}
-	defer file.Close()
+	return line, false
+}
 
-	fileReader := bufio.NewReader(file)
-
-
-	for line, lerr := readLine(fileReader); lerr != io.EOF; line, lerr = readLine(fileReader) {
-		totalLines ++
-		if err != nil {
-			errLines ++
-		} else {
-			switch method(line) {
-			case FI_SUCCESS: okLines ++
-			case FI_FAILED: errLines ++
-			}
-		}
-	}
-	return totalLines, okLines, errLines, nil
+func (self *lineIterator) Close() {
+	self.file.Close()
 }
