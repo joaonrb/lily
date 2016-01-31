@@ -6,20 +6,12 @@ import (
 	"io"
 )
 
-type fiState int
-
-const (
-	FI_SUCCESS fiState = iota
-	FI_FAILED
-	FI_IGNORED  // In case of lines that not are meant to be executed
-)
-
 type lineIterator struct {
 	file   *os.File
 	buffer *bufio.Reader
 }
 
-func NewLineIterator(filename string, method func(line string) fiState) *lineIterator {
+func NewLineIterator(filename string) *lineIterator {
 
 	// Open file
 	file, err := os.Open(filename)
