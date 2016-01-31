@@ -7,8 +7,9 @@ import (
 )
 
 type lineIterator struct {
-	file   *os.File
-	buffer *bufio.Reader
+	file    *os.File
+	buffer  *bufio.Reader
+	hasNext bool
 }
 
 func NewLineIterator(filename string) (*lineIterator, error) {
@@ -18,10 +19,9 @@ func NewLineIterator(filename string) (*lineIterator, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	fileReader := bufio.NewReader(file)
 
-	return &lineIterator{file, fileReader}, nil
+	return &lineIterator{file, fileReader, true}, nil
 }
 
 func readLine(r *bufio.Reader) (string, error) {
@@ -37,17 +37,14 @@ func readLine(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 
-/**
- * Return the next line and if is last.
- * return line string: The next line in the file.
- * return isLast bool: If this line is the last in the file.
- */
-func (self *lineIterator) Next() (line string, isLast bool) {
+func (self *lineIterator) Next() string {
 	line, err := readLine(self.buffer)
-	if err == io.EOF {
-		return line, true
-	}
-	return line, false
+	if err == io.EOF { self.hasNext = false }
+	return line
+}
+
+func (self *lineIterator) HasNext() bool {
+	return self.hasNext
 }
 
 func (self *lineIterator) Close() {
