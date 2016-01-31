@@ -11,18 +11,17 @@ type lineIterator struct {
 	buffer *bufio.Reader
 }
 
-func NewLineIterator(filename string) *lineIterator {
+func NewLineIterator(filename string) (*lineIterator, error) {
 
 	// Open file
 	file, err := os.Open(filename)
 	if err != nil {
-		return 0, 0, err
+		return nil, err
 	}
-	defer file.Close()
 
 	fileReader := bufio.NewReader(file)
 
-	return &lineIterator{file, fileReader}
+	return &lineIterator{file, fileReader}, nil
 }
 
 func readLine(r *bufio.Reader) (string, error) {
