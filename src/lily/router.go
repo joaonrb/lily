@@ -1,10 +1,9 @@
-// Package lily
 //
 // Copyright (c) João Nuno. All rights reserved.
 //
 // Default router for Lily. Load the router in main app. Router must implement IRouter.
 // Package router loads a string in format:
-// `/path1/path2/:(?P<parameter>\d+)` ExampleController
+// "/path1/path2/:(?P<parameter>\d+)" ExampleController
 //
 package lily
 
@@ -13,69 +12,117 @@ import (
 	"strings"
 )
 
-var appRouter IRouter
+var mainRouter IRouter
 
-func LoadRouter(path string) {
+// Try to register a new router if no router is register already.
+// @return: true if new router was successful registered and false otherwise.
+func RegisterRouter(router IRouter) bool {
+	if mainRouter == nil {
+		mainRouter = router
+		return true
+	}
+	return false
+}
 
-	appRouter = router
+// Register a new router
+func ForceRegisterRouter(router IRouter) {
+	mainRouter = router
+}
+
+// Register a path to the router. If no router was resisted it creates a new router.
+func Register(path string, controller IController) error {
+	// Creates a new router if none exist.
+	if mainRouter == nil {
+		mainRouter = Router{newRouterNode()}
+	}
+	return mainRouter.Register(path, controller)
 }
 
 type IRouter interface {
-	Parse(string) (IController, map[string]string)
-	GetPath(string, map[string]string)
+	Parse(string) (IController, map[string]string, error)
+	Register(string, IController) error
 }
 
-type IRoute interface {
-	GetRoute(string, map[string]string) IRoute
-	GetController() IController
+// Router node
+// It holds the possible flat routes and after that the regex routes.
+type routerNode struct {
+	flatRoutes   map[string]routerNode
+	regexRoutes  map[string]regexNode
+	controller   IController
+}
+
+func newRouterNode() *routerNode {
+	return &routerNode{map[string]routerNode{}, map[string]regexNode{}, nil}
 }
 
 
-type router struct {
-	head IRoute
+type regexNode struct {
+	*routerNode
+	regex  regexp.Regexp
+}
+// Simple router
+// Search for the flat routes first and the regex after. At the end returns the controller.
+type Router struct {
+	route routerNode
 }
 
-func (self *router) Parse(path string) (IController, map[string]string) {
-	subpaths := strings.Split(path, "/")
-	route := self.head
+func (self *Router) Parse(path string) (IController, map[string]string, error) {
+	ways := strings.Split(path, "/")
+	thisRoute := self.route
 	params := map[string]string{}
-	for _, subpath := range subpaths {
-		route = route.GetRoute(subpath, params)
+
+	for _, way := range ways {
+		if newRoute, ok := thisRoute.flatRoutes[way]; ok {
+			thisRoute = newRoute
+		} else {
+			found := false
+			for _, regexRoute := range thisRoute.regexRoutes {
+				match := regexRoute.regex.FindStringSubmatch(way)
+				if len(match) > 0 {
+					params[regexRoute.regex.SubexpNames()[0]] = match[0]
+					thisRoute = regexRoute.routerNode
+					found = true
+					break
+				}
+			}
+			if !found {
+				return nil, nil, NewHttp404()
+			}
+		}
 	}
-	if route.GetController() != nil {
-		return route.GetController(), params
+	return thisRoute.controller, params, nil
+}
+
+func (self *Router) Register(path string, controller IController) error {
+	ways := strings.Split(path, "/")
+	thisRoute := self.route
+
+	for _, way := range ways {
+		if ":" == way[0] {
+			regexString := way[1:]
+			if regexRouter, ok := thisRoute.regexRoutes[regexString]; ok {
+				thisRoute = regexRouter.routerNode
+			} else {
+				regex, err := regexp.Compile(regexString)
+				if err != nil {
+					return err
+				}
+				thisRoute.regexRoutes[regexString] = regexNode{newRouterNode(), regex}
+				thisRoute = thisRoute.regexRoutes[regexString]
+			}
+		} else {
+			if router, ok :=  thisRoute.flatRoutes[way]; ok {
+				thisRoute = router
+			} else {
+				thisRoute = newRouterNode()
+			}
+		}
 	}
-	return nil, nil
-}
-
-type route struct {
-	controller IController
-}
-
-func (self *route) GetController() IController {
-	return self.controller
-}
-
-type simpleRoute struct {
-	route
-	routes map[string]IRoute
-}
-
-func (self *simpleRoute) GetRoute(route string, params map[string]string) IRoute {
-	return self.routes[route]
-}
-
-type regexRoute struct {
-	route
-	regex *regexp.Regexp
-	path IRoute
-}
-
-func (self *regexRoute) GetRoute(route string, params map[string]string) IRoute {
-	match := self.regex.FindStringSubmatch(route)
-	if len(match) > 0 {
-		params[self.regex.SubexpNames()[0]] = match[0]
-		return self.path
+	switch {
+	case thisRoute.controller != nil:
+		return PathAlredyExist(path)
+	default:
+		thisRoute.controller = controller
 	}
 	return nil
 }
