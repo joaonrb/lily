@@ -21,7 +21,7 @@ func main() {
 				Level: "debug",
 			},
 		},
-		AccessLog: lily.AccessLogSetings{
+		AccessLog: lily.AccessLogSettings{
 			Type: "console",
 		}, 
 	}

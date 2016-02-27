@@ -15,8 +15,11 @@ var(
 )
 
 type Settings struct {
-	Loggers   map[string]LogSettings     `yaml:"loggers,omitempty"`
-	AccessLog AccessLogSettings `yaml:"accesslog,omitempty"`
+	Bind       string                  `yaml:"bind,omitempty"`
+	Port       int                     `yaml:"port,omitempty"`
+	Loggers    map[string]LogSettings  `yaml:"loggers,omitempty"`
+	AccessLog  AccessLogSettings       `yaml:"accesslog,omitempty"`
+	Middleware []string                `yaml:"middleware,omitempty"`
 }
 
 type LogSettings struct {
