@@ -28,6 +28,7 @@ func defaultHandler() IHandler {
 }
 
 type IHandler interface {
+	ServeHTTP(responseWriter http.ResponseWriter, request *http.Request)
 	Initializer() IInitializer
 	Finalizer() IFinalizer
 }
@@ -74,8 +75,6 @@ func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http
 	
 	response = self.Handle(controller, lilyRequest, params)
 }
-
-
 
 func (self *Handler) Handle(controller IController, request *Request, args map[string]string) *Response {
 	for _, middleware := range controller.PreMiddleware() {

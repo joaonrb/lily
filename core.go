@@ -6,7 +6,6 @@
 package lily
 
 import (
-	"lily/apps/accesslog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,7 +19,7 @@ const (
 )
 
 func Run() {
-	fmt.Printf("# Server Startin")
+	fmt.Printf("# Server Starting\n")
 
 	if mainHandler == nil {
 		mainHandler = defaultHandler()
@@ -36,10 +35,8 @@ func Run() {
 	}
 
 	for _, middleware := range Configuration.Middleware {
-		middleware(mainHandler)
+		resgistedMiddleware[middleware](mainHandler)
 	}
-
-	accesslog.Register(mainHandler)
 
 	http.Handle("/", mainHandler)
 	listener := fmt.Sprintf("%s:%d", bind, port)
@@ -58,7 +55,7 @@ func waitForFinish() {
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
 		for _ = range signalChan {
-			fmt.Println("# Server closing...")
+			fmt.Println("\n# Server closing...")
 			cleanupDone <- true
 		}
 	}()

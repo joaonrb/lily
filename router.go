@@ -83,12 +83,13 @@ type Way struct {
 	Controller  IController
 }
 
+// TODO: FIX Parse and do test
 func (self *Router) Parse(path string) (IController, map[string]string, error) {
 	ways := strings.Split(path, "/")
 	thisRoute := self.route
 	params := map[string]string{}
-	fmt.Println(self.route.controller == nil, path, ways[1:len(ways)-1])
-	for _, way := range ways[1:len(ways)-1] {
+	for _, way := range ways {
+		if way == "" { continue }
 		if newRoute, ok := thisRoute.flatRoutes[way]; ok {
 			thisRoute = newRoute
 		} else {
@@ -107,7 +108,6 @@ func (self *Router) Parse(path string) (IController, map[string]string, error) {
 			}
 		}
 	}
-	fmt.Println(thisRoute.controller, params, nil)
 	return thisRoute.controller, params, nil
 }
 
