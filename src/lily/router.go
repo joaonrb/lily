@@ -10,6 +10,7 @@ package lily
 import (
 	"regexp"
 	"strings"
+	"fmt"
 )
 
 var mainRouter IRouter
@@ -33,19 +34,19 @@ func ForceRegisterRouter(router IRouter) {
 func RegisterOne(path string, controller IController) error {
 	// Creates a new router if none exist.
 	if mainRouter == nil {
-		mainRouter = Router{newRouterNode()}
+		mainRouter = &Router{newRouterNode()}
 	}
 	return mainRouter.Register(path, controller)
 }
 
 // Register a bulk of controllers
-func Register(paths ...Way) error {
+func Register(paths []Way) error {
 	// Creates a new router if none exist.
 	if mainRouter == nil {
-		mainRouter = Router{newRouterNode()}
+		mainRouter = &Router{newRouterNode()}
 	}
 	for _, way := range paths {
-		err := mainRouter.Register(way.Path, way.controller)
+		err := mainRouter.Register(way.Path, way.Controller)
 		if err != nil {
 			return err
 		}
@@ -61,36 +62,36 @@ type IRouter interface {
 // Router node
 // It holds the possible flat routes and after that the regex routes.
 type routerNode struct {
-	flatRoutes   map[string]routerNode
-	regexRoutes  map[string]regexNode
+	flatRoutes   map[string]*routerNode
+	regexRoutes  map[string]*regexNode
 	controller   IController
 }
 
 func newRouterNode() *routerNode {
-	return &routerNode{map[string]routerNode{}, map[string]regexNode{}, nil}
+	return &routerNode{map[string]*routerNode{}, map[string]*regexNode{}, nil}
 }
 
 type regexNode struct {
 	*routerNode
-	regex  regexp.Regexp
+	regex  *regexp.Regexp
 }
 // Simple router
 // Search for the flat routes first and the regex after. At the end returns the controller.
 type Router struct {
-	route routerNode
+	route *routerNode
 }
 
 type Way struct {
 	Path        string
-	controller  IController
+	Controller  IController
 }
 
 func (self *Router) Parse(path string) (IController, map[string]string, error) {
 	ways := strings.Split(path, "/")
 	thisRoute := self.route
 	params := map[string]string{}
-
-	for _, way := range ways {
+	fmt.Println(self.route.controller == nil, path, ways[1:len(ways)-1])
+	for _, way := range ways[1:len(ways)-1] {
 		if newRoute, ok := thisRoute.flatRoutes[way]; ok {
 			thisRoute = newRoute
 		} else {
@@ -109,6 +110,7 @@ func (self *Router) Parse(path string) (IController, map[string]string, error) {
 			}
 		}
 	}
+	fmt.Println(thisRoute.controller, params, nil)
 	return thisRoute.controller, params, nil
 }
 
@@ -117,7 +119,9 @@ func (self *Router) Register(path string, controller IController) error {
 	thisRoute := self.route
 
 	for _, way := range ways {
-		if ":" == way[0] {
+		switch {
+		case len(way) == 0:
+		case ':' == way[0]:
 			regexString := way[1:]
 			if regexRouter, ok := thisRoute.regexRoutes[regexString]; ok {
 				thisRoute = regexRouter.routerNode
@@ -126,10 +130,10 @@ func (self *Router) Register(path string, controller IController) error {
 				if err != nil {
 					return err
 				}
-				thisRoute.regexRoutes[regexString] = regexNode{newRouterNode(), regex}
-				thisRoute = thisRoute.regexRoutes[regexString]
+				thisRoute.regexRoutes[regexString] = &regexNode{newRouterNode(), regex}
+				thisRoute = thisRoute.regexRoutes[regexString].routerNode
 			}
-		} else {
+		default:
 			if router, ok :=  thisRoute.flatRoutes[way]; ok {
 				thisRoute = router
 			} else {

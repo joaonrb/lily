@@ -3,12 +3,7 @@
 //
 package lily
 
-import (
-	"strings"
-)
-
 type IController interface {
-	Handle(*Request, map[string]string) *Response
 	Get(*Request, map[string]string) *Response
 	Head(*Request, map[string]string) *Response
 	Post(*Request, map[string]string) *Response
@@ -28,33 +23,6 @@ type Controller struct {
 
 func NewController() IController {
 	return &Controller{[]RequestMiddleware{}, []ResponseMiddleware{}}
-}
-
-func (self *Controller) Handle(request *Request, args map[string]string) *Response {
-	for _, middleware := range self.PreMiddleware() {
-		middleware(request)
-	}
-	var response *Response
-	switch strings.ToUpper(request.Method) {
-	case "GET":
-		response = self.Get(request, args)
-	case "POST":
-		response = self.Post(request, args)
-	case "PUT":
-		response = self.Put(request, args)
-	case "DELETE":
-		response = self.Delete(request, args)
-	case "HEAD":
-		response = self.Head(request, args)
-	case "TRACE":
-		response = self.Trace(request, args)
-	default:
-		RaiseHttp400("Wrong method")
-	}
-	for _, middleware := range self.PosMiddleware() {
-		middleware(request, response)
-	}
-	return response
 }
 
 func (self *Controller) Get(request *Request, args map[string]string) *Response {

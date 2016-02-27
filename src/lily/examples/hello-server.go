@@ -26,14 +26,13 @@ func main() {
 	lily.LoadLogger()
 	
 	controller := &hello.HelloWorldController{}
-	
-	route := lily.NewRoute()
-	route.C(controller)
-	router := lily.NewRouter(route)
+
+	lily.Register([]lily.Way{
+		{"/", controller},
+	})
 	
 	handler := lily.NewHandler(
 		lily.NewRequestInitializer(),
-		router,
 		lily.NewFinalizer(),
 	)
 	

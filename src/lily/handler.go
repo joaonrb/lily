@@ -6,6 +6,7 @@ package lily
 import (
 	"net/http"
 	"fmt"
+	"strings"
 )
 
 type IHandler interface {
@@ -19,11 +20,10 @@ type IHandler interface {
 type Handler struct {
 	init   IInitializer
 	finish IFinalizer
-	router IRouter
 }
 
-func NewHandler(init IInitializer, router IRouter, finish IFinalizer) *Handler {
-	return &Handler{init, finish, router}
+func NewHandler(init IInitializer, finish IFinalizer) *Handler {
+	return &Handler{init, finish}
 }
 
 func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
@@ -49,9 +49,41 @@ func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http
 	}()
 	lilyRequest = self.init.Start(request)
 
-	controller, params := self.router.Parse(lilyRequest.URL.Path)
+	controller, params, err := mainRouter.Parse(lilyRequest.URL.Path)
+	if err != nil {
+		panic(err)
+	}
 	
-	response = controller.Handle(lilyRequest, params)
+	response = self.Handle(controller, lilyRequest, params)
+}
+
+
+
+func (self *Handler) Handle(controller IController, request *Request, args map[string]string) *Response {
+	for _, middleware := range controller.PreMiddleware() {
+		middleware(request)
+	}
+	var response *Response
+	switch strings.ToUpper(request.Method) {
+	case "GET":
+		response = controller.Get(request, args)
+	case "POST":
+		response = controller.Post(request, args)
+	case "PUT":
+		response = controller.Put(request, args)
+	case "DELETE":
+		response = controller.Delete(request, args)
+	case "HEAD":
+		response = controller.Head(request, args)
+	case "TRACE":
+		response = controller.Trace(request, args)
+	default:
+		RaiseHttp400("Wrong method")
+	}
+	for _, middleware := range controller.PosMiddleware() {
+		middleware(request, response)
+	}
+	return response
 }
 
 func (self *Handler) Initializer() IInitializer { return self.init }
