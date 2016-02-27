@@ -1,8 +1,12 @@
 //
-// Copyright (c) Telefonica I+D. All rights reserved.
+// Copyright (c) João Nuno. All rights reserved.
 //
 package lily
-import "net/http"
+
+import (
+	"net/http"
+	"fmt"
+)
 
 var (
 	HTTP_400_MESSAGE = "Bad request"
@@ -10,6 +14,10 @@ var (
 	HTTP_405_MESSAGE = "Method not allowed"
 	HTTP_500_MESSAGE = "Ups!!! We f*cked up somewhere. Maybe is better this way. This website is boring anyway."
 )
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Http errors
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 type IHttpError interface {
 	ToResponse() *Response
@@ -67,3 +75,19 @@ func NewHttp500(err string) *Http500 {
 }
 
 func RaiseHttp500(err string) { panic(NewHttp500(err)) }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Routing errors
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+type PathAlreadyExist struct {
+	path  string
+}
+
+func (self *PathAlreadyExist) Error() string {
+	return fmt.Sprintf("The path %s already exists in router", self.path)
+}
+
+func NewPathAlreadyExist(path string) *PathAlreadyExist {
+	return &PathAlreadyExist{path}
+}

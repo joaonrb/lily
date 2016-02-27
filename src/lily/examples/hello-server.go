@@ -6,8 +6,8 @@ package main
 import (
 	"net/http"
 	"lily"
-	"lily/hello"
 	"lily/apps/accesslog"
+	"lily/examples/hello"
 )
 
 func main() {
@@ -26,14 +26,13 @@ func main() {
 	lily.LoadLogger()
 	
 	controller := &hello.HelloWorldController{}
-	
-	route := lily.NewRoute()
-	route.C(controller)
-	router := lily.NewRouter(route)
+
+	lily.Register([]lily.Way{
+		{"/", controller},
+	})
 	
 	handler := lily.NewHandler(
 		lily.NewRequestInitializer(),
-		router,
 		lily.NewFinalizer(),
 	)
 	

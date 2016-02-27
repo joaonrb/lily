@@ -1,5 +1,5 @@
 //
-// Copyright (c) Telefonica I+D. All rights reserved.
+// Copyright (c) João Nuno. All rights reserved.
 //
 package lily
 
@@ -55,27 +55,27 @@ var (
 )
 
 func Critical(message string, args ...interface{}) {
-	log.Critical(message, args...)
+	log.Criticalf(message, args...)
 }
 
 func Error(message string, args ...interface{}) {
-	log.Error(message, args...)
+	log.Errorf(message, args...)
 }
 
 func Warning(message string, args ...interface{}) {
-	log.Warning(message, args...)
+	log.Warningf(message, args...)
 }
 
 func Info(message string, args ...interface{}) {
-	log.Info(message, args...)
+	log.Infof(message, args...)
 }
 
 func Notice(message string, args ...interface{}) {
-	log.Notice(message, args...)
+	log.Noticef(message, args...)
 }
 
 func Debug(message string, args ...interface{}) {
-	log.Debug(message, args...)
+	log.Debugf(message, args...)
 }
 
 func LoadLogger() {

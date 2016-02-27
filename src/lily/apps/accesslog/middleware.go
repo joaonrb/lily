@@ -33,7 +33,7 @@ func FinishRequestForLog(request *lily.Request, response *lily.Response) {
 	path := request.RequestURI
 	httpVersion := request.Proto
 	start := request.Context[REQUEST_START].(time.Time)
-	log.Info(
+	log.Infof(
 		"%s %s [%s] \"%s %s %s\" %d %d %s", ip, user, time.Now().Format(TIME_FORMAT), method, path, httpVersion,
 		status, bodyLen, time.Since(start).String(),
 	)
