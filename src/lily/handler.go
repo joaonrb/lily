@@ -1,5 +1,5 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
 //
 package lily
 
@@ -8,6 +8,24 @@ import (
 	"fmt"
 	"strings"
 )
+
+var mainHandler IHandler
+
+func ForceRegisterHandler(handler IHandler) {
+	mainHandler = handler
+}
+
+func RegisterHandler(handler IHandler) bool {
+	if mainHandler != nil {
+		ForceRegisterHandler(handler)
+		return true
+	}
+	return false
+}
+
+func defaultHandler() IHandler {
+	return NewHandler(NewRequestInitializer(), NewFinalizer())
+}
 
 type IHandler interface {
 	Initializer() IInitializer

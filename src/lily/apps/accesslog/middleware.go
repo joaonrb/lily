@@ -1,5 +1,5 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
 //
 package accesslog
 

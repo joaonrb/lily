@@ -1,5 +1,7 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
+//
+// joaonrb@gmail.com
 //
 package main
 
@@ -27,10 +29,11 @@ func main() {
 	
 	controller := &hello.HelloWorldController{}
 
-	lily.Register([]lily.Way{
+	lily.RegisterRoute([]lily.Way{
 		{"/", controller},
 	})
-	
+
+	/////////////////////////////////
 	handler := lily.NewHandler(
 		lily.NewRequestInitializer(),
 		lily.NewFinalizer(),
