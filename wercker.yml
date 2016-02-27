@@ -37,10 +37,10 @@ build:
     - script:
         name: go build
         code: |
-          go build ./lily
+          go build ../lily
 
     # Test the project
     - script:
         name: go test
         code: |
-          go test ./lily
+          go test ../lily
