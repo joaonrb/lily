@@ -30,12 +30,27 @@ func ForceRegisterRouter(router IRouter) {
 }
 
 // Register a path to the router. If no router was resisted it creates a new router.
-func Register(path string, controller IController) error {
+func RegisterOne(path string, controller IController) error {
 	// Creates a new router if none exist.
 	if mainRouter == nil {
 		mainRouter = Router{newRouterNode()}
 	}
 	return mainRouter.Register(path, controller)
+}
+
+// Register a bulk of controllers
+func Register(paths ...Way) error {
+	// Creates a new router if none exist.
+	if mainRouter == nil {
+		mainRouter = Router{newRouterNode()}
+	}
+	for _, way := range paths {
+		err := mainRouter.Register(way.Path, way.controller)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type IRouter interface {
@@ -55,7 +70,6 @@ func newRouterNode() *routerNode {
 	return &routerNode{map[string]routerNode{}, map[string]regexNode{}, nil}
 }
 
-
 type regexNode struct {
 	*routerNode
 	regex  regexp.Regexp
@@ -64,6 +78,11 @@ type regexNode struct {
 // Search for the flat routes first and the regex after. At the end returns the controller.
 type Router struct {
 	route routerNode
+}
+
+type Way struct {
+	Path        string
+	controller  IController
 }
 
 func (self *Router) Parse(path string) (IController, map[string]string, error) {
@@ -120,7 +139,7 @@ func (self *Router) Register(path string, controller IController) error {
 	}
 	switch {
 	case thisRoute.controller != nil:
-		return PathAlredyExist(path)
+		return NewPathAlreadyExist(path)
 	default:
 		thisRoute.controller = controller
 	}
