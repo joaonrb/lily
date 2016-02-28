@@ -28,11 +28,12 @@ func main() {
 	lily.LoadLogger()
 	
 	controller := &hello.HelloWorldController{}
+	regexController := &hello.RegexHelloWorldController{}
 
 	lily.RegisterRoute([]lily.Way{
 		{"/", controller},
-		{"/test", controller},
-		{"/test/r", controller},
+		{"/another", controller},
+		{`/:(?P<user>\S+)`, regexController},
 	})
 
 	lily.Run()

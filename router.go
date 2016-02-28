@@ -10,7 +10,6 @@ package lily
 import (
 	"regexp"
 	"strings"
-	"fmt"
 )
 
 var mainRouter IRouter
@@ -83,7 +82,7 @@ type Way struct {
 	Controller  IController
 }
 
-// TODO: FIX Parse and do test
+// TODO: Do test
 func (self *Router) Parse(path string) (IController, map[string]string, error) {
 	ways := strings.Split(path, "/")
 	thisRoute := self.route
@@ -97,7 +96,7 @@ func (self *Router) Parse(path string) (IController, map[string]string, error) {
 			for _, regexRoute := range thisRoute.regexRoutes {
 				match := regexRoute.regex.FindStringSubmatch(way)
 				if len(match) > 0 {
-					params[regexRoute.regex.SubexpNames()[0]] = match[0]
+					params[regexRoute.regex.SubexpNames()[1]] = match[0]
 					thisRoute = regexRoute.routerNode
 					found = true
 					break
@@ -134,7 +133,8 @@ func (self *Router) Register(path string, controller IController) error {
 			if router, ok :=  thisRoute.flatRoutes[way]; ok {
 				thisRoute = router
 			} else {
-				thisRoute = newRouterNode()
+				thisRoute.flatRoutes[way] = newRouterNode()
+				thisRoute = thisRoute.flatRoutes[way]
 			}
 		}
 	}
