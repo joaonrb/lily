@@ -7,34 +7,23 @@ package main
 
 import (
 	"lily"
-	"lily/examples/hello"
+	_ "lily/examples/hello"
 	_ "lily/apps/accesslog"
+	"fmt"
+	"os"
 )
 
 func main() {
-	lily.Configuration = &lily.Settings{
-		Middleware: []string{"accesslog"},
-		Loggers: map[string]lily.LogSettings{
-			"default": {
-				Type: "console",
-				Layout: "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}",
-				Level: "debug",
-			},
-		},
-		AccessLog: lily.AccessLogSettings{
-			Type: "console",
-		}, 
+	if len(os.Args) != 2 {
+		fmt.Printf("Usage: %s <config>\n", os.Args[0])
+		os.Exit(1)
 	}
+	// Pass the absolute path of the file hello-config.yaml in command
+	err := lily.Init(os.Args[1])
+	if err != nil {
+		fmt.Printf("Errors in config file: %s\n", err.Error())
+	}
+
 	lily.LoadLogger()
-	
-	controller := &hello.HelloWorldController{}
-	regexController := &hello.RegexHelloWorldController{}
-
-	lily.RegisterRoute([]lily.Way{
-		{"/", controller},
-		{"/another", controller},
-		{`/:(?P<user>\S+)`, regexController},
-	})
-
 	lily.Run()
 }

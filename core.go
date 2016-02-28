@@ -40,7 +40,13 @@ func Run() {
 
 	http.Handle("/", mainHandler)
 	listener := fmt.Sprintf("%s:%d", bind, port)
-	go http.ListenAndServe(listener, nil)
+	go func() {
+		err := http.ListenAndServe(listener, nil)
+		if err != nil {
+			fmt.Printf("**Error starting server**\n%s\n\nExiting. Bye bye...", err.Error())
+			os.Exit(1)
+		}
+	}()
 	fmt.Printf("# Listening at %s\n", listener)
 	fmt.Printf("# Use Ctrl+C to close\n")
 
