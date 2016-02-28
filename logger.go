@@ -1,5 +1,7 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
+//
+// joaonrb@gmail.com
 //
 package lily
 

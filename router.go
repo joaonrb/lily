@@ -1,5 +1,5 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
 //
 // Default router for Lily. Load the router in main app. Router must implement IRouter.
 // Package router loads a string in format:
@@ -10,41 +10,37 @@ package lily
 import (
 	"regexp"
 	"strings"
-	"fmt"
 )
 
 var mainRouter IRouter
-
-// Try to register a new router if no router is register already.
-// @return: true if new router was successful registered and false otherwise.
-func RegisterRouter(router IRouter) bool {
-	if mainRouter == nil {
-		mainRouter = router
-		return true
-	}
-	return false
-}
 
 // Register a new router
 func ForceRegisterRouter(router IRouter) {
 	mainRouter = router
 }
 
-// Register a path to the router. If no router was resisted it creates a new router.
-func RegisterOne(path string, controller IController) error {
-	// Creates a new router if none exist.
+// Try to register a new router if no router is register already.
+// @return: true if new router was successful registered and false otherwise.
+func RegisterRouter(router IRouter) bool {
 	if mainRouter == nil {
-		mainRouter = &Router{newRouterNode()}
+		ForceRegisterRouter(router)
+		return true
 	}
+	return false
+}
+
+// Register a path to the router. If no router was resisted it creates a new router.
+func RegisterPath(path string, controller IController) error {
+	// Creates a new router if none exist.
+	RegisterRouter(&Router{newRouterNode()})
 	return mainRouter.Register(path, controller)
 }
 
 // Register a bulk of controllers
-func Register(paths []Way) error {
+func RegisterRoute(paths []Way) error {
 	// Creates a new router if none exist.
-	if mainRouter == nil {
-		mainRouter = &Router{newRouterNode()}
-	}
+	RegisterRouter(&Router{newRouterNode()})
+
 	for _, way := range paths {
 		err := mainRouter.Register(way.Path, way.Controller)
 		if err != nil {
@@ -86,12 +82,13 @@ type Way struct {
 	Controller  IController
 }
 
+// TODO: Do test
 func (self *Router) Parse(path string) (IController, map[string]string, error) {
 	ways := strings.Split(path, "/")
 	thisRoute := self.route
 	params := map[string]string{}
-	fmt.Println(self.route.controller == nil, path, ways[1:len(ways)-1])
-	for _, way := range ways[1:len(ways)-1] {
+	for _, way := range ways {
+		if way == "" { continue }
 		if newRoute, ok := thisRoute.flatRoutes[way]; ok {
 			thisRoute = newRoute
 		} else {
@@ -99,7 +96,7 @@ func (self *Router) Parse(path string) (IController, map[string]string, error) {
 			for _, regexRoute := range thisRoute.regexRoutes {
 				match := regexRoute.regex.FindStringSubmatch(way)
 				if len(match) > 0 {
-					params[regexRoute.regex.SubexpNames()[0]] = match[0]
+					params[regexRoute.regex.SubexpNames()[1]] = match[0]
 					thisRoute = regexRoute.routerNode
 					found = true
 					break
@@ -110,7 +107,6 @@ func (self *Router) Parse(path string) (IController, map[string]string, error) {
 			}
 		}
 	}
-	fmt.Println(thisRoute.controller, params, nil)
 	return thisRoute.controller, params, nil
 }
 
@@ -137,7 +133,8 @@ func (self *Router) Register(path string, controller IController) error {
 			if router, ok :=  thisRoute.flatRoutes[way]; ok {
 				thisRoute = router
 			} else {
-				thisRoute = newRouterNode()
+				thisRoute.flatRoutes[way] = newRouterNode()
+				thisRoute = thisRoute.flatRoutes[way]
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
 //
 package lily
 
@@ -9,7 +9,26 @@ import (
 	"strings"
 )
 
+var mainHandler IHandler
+
+func ForceRegisterHandler(handler IHandler) {
+	mainHandler = handler
+}
+
+func RegisterHandler(handler IHandler) bool {
+	if mainHandler != nil {
+		ForceRegisterHandler(handler)
+		return true
+	}
+	return false
+}
+
+func defaultHandler() IHandler {
+	return NewHandler(NewRequestInitializer(), NewFinalizer())
+}
+
 type IHandler interface {
+	ServeHTTP(responseWriter http.ResponseWriter, request *http.Request)
 	Initializer() IInitializer
 	Finalizer() IFinalizer
 }
@@ -56,8 +75,6 @@ func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http
 	
 	response = self.Handle(controller, lilyRequest, params)
 }
-
-
 
 func (self *Handler) Handle(controller IController, request *Request, args map[string]string) *Response {
 	for _, middleware := range controller.PreMiddleware() {

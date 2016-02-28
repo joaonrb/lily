@@ -1,3 +1,8 @@
+//
+// Author João Nuno.
+//
+// joaonrb@gmail.com
+//
 package utils
 
 import (

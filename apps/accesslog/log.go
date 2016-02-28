@@ -1,5 +1,5 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
 //
 package accesslog
 
@@ -25,6 +25,7 @@ func LoadAccessLogger() {
 		out = os.Stdout
 	case lily.FILE:
 		out = lily.OpenRotatorFile(settings.AccessLog.Path)
+		fmt.Printf("# Access log recording at %s", settings.AccessLog.Path)
 	}
 	logger := logging.NewLogBackend(out, "", 0)
 	beFormatter := logging.NewBackendFormatter(logger, logging.MustStringFormatter("%{message}"))

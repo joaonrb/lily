@@ -1,5 +1,5 @@
 //
-// Copyright (c) João Nuno. All rights reserved.
+// Author João Nuno.
 //
 package accesslog
 
@@ -14,6 +14,10 @@ const (
 	REQUEST_START = "__start__"
 	TIME_FORMAT = "02/Jan/2006:15:04:05Z0700"
 )
+
+func init()  {
+	lily.RegisterMiddleware("accesslog", Register)
+}
 
 func InitRequestForLog(request *lily.Request) {
 	request.Context[REQUEST_START] = time.Now().UTC()
