@@ -1,5 +1,7 @@
 # README #
 
+[![wercker status](https://app.wercker.com/status/ad468758f673061c737881f592ef2216/s "wercker status")](https://app.wercker.com/project/bykey/ad468758f673061c737881f592ef2216)
+
 This README would normally document whatever steps are necessary to get your application up and running.
 
 ### What is this repository for? ###
