@@ -1,8 +1,5 @@
 Lily
 ====
-[![wercker status](https://app.wercker.com/status/ad468758f673061c737881f592ef2216/s "wercker status")](https://app.wercker.com/project/bykey/ad468758f673061c737881f592ef2216)
-Lily
-====
 [![wercker status](https://app.wercker.com/status/59db38b243305ec2b61104ec51ea0353/s "wercker status")](https://app.wercker.com/project/bykey/59db38b243305ec2b61104ec51ea0353)
 
 About
