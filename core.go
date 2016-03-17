@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	DEFAULT_PORT  = 5555
-	DEFAULT_BIND  = "127.0.0.1"
+	DEFAULT_PORT       = 5555
+	DEFAULT_HTTPS_PORT = 443
+	DEFAULT_BIND       = "127.0.0.1"
 )
 
 func Run() {
@@ -27,27 +28,48 @@ func Run() {
 
 	port := Configuration.Port
 	if port == 0 {
-		port = DEFAULT_PORT
+		if Configuration.Https {
+			if Configuration.SSLCertificate == "" || Configuration.SSLKey == "" {
+				fmt.Printf("**Error: Missing ssl certificate or key files in configuration.")
+				os.Exit(1)
+			}
+			port = DEFAULT_HTTPS_PORT
+		} else {
+			port = DEFAULT_PORT
+		}
 	}
 	bind := Configuration.Bind
 	if bind == "" {
 		bind = DEFAULT_BIND
 	}
 
+	read_timeout := Configuration.ReadTimeout * 10e6
+	write_timeout := Configuration.WriteTimeout * 10e6
+
 	for _, middleware := range Configuration.Middleware {
 		resgistedMiddleware[middleware](mainHandler)
 	}
 
-	http.Handle("/", mainHandler)
-	listener := fmt.Sprintf("%s:%d", bind, port)
+	address := fmt.Sprintf("%s:%d", bind, port)
+	server := &http.Server{
+		Addr: address,
+		Handler: mainHandler,
+		ReadTimeout: read_timeout,
+		WriteTimeout: write_timeout,
+	}
 	go func() {
-		err := http.ListenAndServe(listener, nil)
+		var err error
+		if Configuration.Https {
+			server.ListenAndServeTLS(Configuration.SSLCertificate, Configuration.SSLKey)
+		} else {
+			server.ListenAndServe()
+		}
 		if err != nil {
 			fmt.Printf("**Error starting server**\n%s\n\nExiting. Bye bye...", err.Error())
 			os.Exit(1)
 		}
 	}()
-	fmt.Printf("# Listening at %s\n", listener)
+	fmt.Printf("# Listening at %s\n", address)
 	fmt.Printf("# Use Ctrl+C to close\n")
 
 	waitForFinish()
