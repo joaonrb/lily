@@ -22,6 +22,7 @@ type Settings struct {
 	Https           bool                    `yaml:"https,omitempty"`
 	SSLCertificate  string                  `yaml:"ssl_certificate,omitempty"`
 	SSLKey          string                  `yaml:"ssl_key,omitempty"`
+	StaticPath      string                  `yaml:"static_path,omitempty"`
 	StaticFiles     string                  `yaml:"static_files,omitempty"`
 	Loggers         map[string]LogSettings  `yaml:"loggers,omitempty"`
 	AccessLog       AccessLogSettings       `yaml:"accesslog,omitempty"`

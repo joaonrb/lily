@@ -11,12 +11,14 @@ import (
 	"os/signal"
 	"fmt"
 
+	"time"
 )
 
 const (
-	DEFAULT_PORT       = 5555
-	DEFAULT_HTTPS_PORT = 443
-	DEFAULT_BIND       = "127.0.0.1"
+	DEFAULT_PORT        = 5555
+	DEFAULT_HTTPS_PORT  = 443
+	DEFAULT_BIND        = "127.0.0.1"
+	DEFAULT_STATIC_PATH = "/static/"
 )
 
 func Run() {
@@ -43,17 +45,30 @@ func Run() {
 		bind = DEFAULT_BIND
 	}
 
-	read_timeout := Configuration.ReadTimeout * 10e6
-	write_timeout := Configuration.WriteTimeout * 10e6
+	read_timeout := time.Duration(Configuration.ReadTimeout * 10e6)
+	write_timeout := time.Duration(Configuration.WriteTimeout * 10e6)
 
 	for _, middleware := range Configuration.Middleware {
 		resgistedMiddleware[middleware](mainHandler)
 	}
 
+	mux := http.NewServeMux()
+	if Configuration.StaticFiles != "" {
+		if Configuration.StaticPath == "" {
+			mux.Handle(DEFAULT_STATIC_PATH, http.FileServer(http.Dir(Configuration.StaticFiles)))
+		} else {
+			mux.Handle(Configuration.StaticFiles, http.FileServer(http.Dir(Configuration.StaticFiles)))
+		}
+	}
+	if Configuration.StaticPath != "/" {
+		mux.Handle("/", mainHandler)
+	}
+
+
 	address := fmt.Sprintf("%s:%d", bind, port)
 	server := &http.Server{
 		Addr: address,
-		Handler: mainHandler,
+		Handler: mux,
 		ReadTimeout: read_timeout,
 		WriteTimeout: write_timeout,
 	}
