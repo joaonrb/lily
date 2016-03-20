@@ -22,13 +22,18 @@ version correctly.
 First get the dependencies:
 
 - [go-logging](http://github.com/op/go-logging)
-- [yalm](gopkg.in/yaml.v2)
+- [yalm](http://gopkg.in/yaml.v2)
+- [gorm](http://github.com/jinzhu/gorm)  # For ORM
 
 Then get lily.
 
 ```
 $ go get github.com/op/go-logging
 $ go get gopkg.in/yaml.v2
+$ go get github.com/jinzhu/gorm
+$ go get github.com/mattn/go-sqlite3     # For sqlite3
+$ go get github.com/go-sql-driver/mysql  # For MySQL
+$ go get github.com/lib/pq               # For Postgres
 $ go get github.com/joaonrb/lily
 ```
 
