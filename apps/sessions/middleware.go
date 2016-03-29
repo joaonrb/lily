@@ -13,12 +13,10 @@ import (
 )
 
 const (
-	DEFAULT_SESSION_COOKIE     = "LILYGUEST"
+	DEFAULT_SESSION_COOKIE     = "LILYSESSION"
 	DEFAULT_SESSION_AGE        = time.Hour
-	DEFAULT_SESSION_LENGTH = 11
+	DEFAULT_SESSION_LENGTH     = 10
 	SESSION                    = "session"
-	SET_SESSION                = "set-session"
-	COOKIE                     = "cookie"
 )
 
 var (
@@ -39,33 +37,24 @@ func GetSession(request *lily.Request) Session {
 
 func CheckSession(request *lily.Request) {
 	if sessionCookie, err := request.Cookie(cookieName); err == nil && time.Now().UTC().Before(sessionCookie.Expires) {
-		session, exist := sessionStore.GetSession(sessionCookie.Value)
-		if !exist {
-			session = Session{COOKIE: lu.GenerateBase64String(cookieLength)}
-			request.Context[SET_SESSION] = true
-		}
-		request.Context[SESSION] = session
+		request.Context[SESSION] = sessionCookie.Value
 	}
 }
 
 func SetSession(request *lily.Request, response *lily.Response) {
 	session := GetSession(request)
-	if session[SESSION].(bool) {
-		sessionStore.SetSession(session[COOKIE].(string), time.Now().UTC().Add(maxAge), session)
+	if _, exist := session[SESSION]; !exist {
 		cookie := &http.Cookie{
 			Name: cookieName,
-			Value: session[COOKIE].(string),
+			Value: lu.GenerateBase64String(cookieLength),
 			MaxAge: maxAge.Seconds(),
 			Path: "/",
 		}
 		response.Headers["Set-Cookie"] = cookie.String()
-	} else {
-		sessionStore.UpdateSession(session[COOKIE].(string), session)
 	}
 }
 
 func Register(handler lily.IHandler) {
-	LoadSessionStore()
 	handler.Initializer().Register(CheckSession)
 	handler.Finalizer().RegisterFinish(SetSession)
 }
