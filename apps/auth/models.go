@@ -26,3 +26,7 @@ type AuthToken struct {
 	Duration  uint
 	IsDeleted bool
 }
+
+func RegisterModels(db gorm.DB) {
+	db.AutoMigrate(&User{}, &AuthToken{})
+}
