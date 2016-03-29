@@ -71,8 +71,13 @@ func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http
 	if err != nil {
 		panic(err)
 	}
-	
+	for _, middleware := range controller.PreMiddleware() {
+		middleware(lilyRequest)
+	}
 	response = controller.Handle(controller, lilyRequest, params)
+	for _, middleware := range controller.PosMiddleware() {
+		middleware(lilyRequest)
+	}
 }
 
 func (self *Handler) Initializer() IInitializer { return self.init }
