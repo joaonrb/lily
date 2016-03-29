@@ -26,10 +26,8 @@ func init()  {
 	lily.RegisterMiddleware("sessions", Register)
 }
 
-type Session map[string] interface{}
-
-func GetSession(request *lily.Request) Session {
-	return request.Context[SESSION].(Session)
+func GetSession(request *lily.Request) string {
+	return request.Context[SESSION].(string)
 }
 
 func CheckSession(request *lily.Request) {
