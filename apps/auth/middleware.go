@@ -26,11 +26,14 @@ func init()  {
 
 func CheckAuth(request *lily.Request) {
 	if sessionCookie, err := request.Cookie(cookieName); err == nil {
-		request.Context[USER] = GetUserFromAuth(sessionCookie.Value)
+		request.Context[USER] = func() {
+			GetUserFromAuth(request)
+		}
 	}
 }
 
 func SetSession(request *lily.Request, response *lily.Response) {
+
 }
 
 func Register(handler lily.IHandler) {
