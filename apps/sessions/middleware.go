@@ -31,9 +31,7 @@ func GetSession(request *lily.Request) string {
 }
 
 func CheckSession(request *lily.Request) {
-	if sessionCookie, err := request.Cookie(cookieName); err == nil {
-		request.Context[SESSION] = sessionCookie.Value
-	}
+	request.Context[SESSION] = request.Header.Cookie(cookieName)
 }
 
 func SetSession(request *lily.Request, response *lily.Response) {

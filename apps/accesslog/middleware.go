@@ -35,7 +35,7 @@ func FinishRequestForLog(request *lily.Request, response *lily.Response) {
 	ip := request.RemoteAddr
 	method := request.Method
 	path := request.RequestURI
-	httpVersion := request.Proto
+	httpVersion := "HTTP1.1"; if !request.Header.IsHTTP11() { httpVersion = "HTTP1.0'" }
 	start := request.Context[REQUEST_START].(time.Time)
 	log.Infof(
 		"%s %s [%s] \"%s %s %s\" %d %d %s", ip, user, time.Now().Format(TIME_FORMAT), method, path, httpVersion,

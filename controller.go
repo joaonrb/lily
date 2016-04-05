@@ -37,7 +37,7 @@ func (self *Controller) Handle(controller IController, request *Request, args ma
 		middleware(request)
 	}
 	var response *Response
-	switch strings.ToUpper(request.Method) {
+	switch strings.ToUpper(request.Method()) {
 	case "GET":
 		response = controller.Get(request, args)
 	case "POST":

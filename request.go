@@ -6,18 +6,29 @@
 package lily
 
 import (
-	"net/http"
+	"github.com/valyala/fasthttp"
 )
+
+const CONTENT_TYPE = "ContentType"
 
 type Context map[string]interface{}
 
 type Request struct {
-	http.Request
+	*fasthttp.Request
 	Context      Context
+	ctx          *fasthttp.RequestCtx
+}
+
+func (self *Request) Method() string {
+	return string(self.Header.Method())
+}
+
+func (self *Request) RemoteAddr() string {
+	return string(self.ctx.RemoteIP())
 }
 
 type IInitializer interface {
-	Start(*http.Request) *Request
+	Start(*fasthttp.RequestCtx) *Request
 	Register(middleware RequestMiddleware)
 }
 
@@ -29,10 +40,11 @@ func NewRequestInitializer() *RequestInitializer {
 	return &RequestInitializer{[]RequestMiddleware{}}
 }
 
-func (self *RequestInitializer) Start(request *http.Request) *Request {
+func (self *RequestInitializer) Start(request *fasthttp.RequestCtx) *Request {
 	lilyRequest := &Request{
-		Request: *request,
-		Context: Context {},
+		Request: &request.Request,
+		Context: Context {CONTENT_TYPE: "text/html"},
+		ctx: request,
 	}
 	for _, middleware := range self.middleware {
 		middleware(lilyRequest)
