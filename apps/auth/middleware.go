@@ -24,18 +24,18 @@ package auth
 //	lily.RegisterMiddleware("auth", Register)
 //}
 //
-////func CheckAuth(request *lily.Request) {
-////	sessionCookie := request.Header.Cookie(cookieName)
-////	request.Context[USER] = func() {
-////			GetUserFromAuth(request)
-////	}
-////}
+//func CheckAuth(request *lily.Request) {
+//	sessionCookie := request.Header.Cookie(cookieName)
+//	request.Context[USER] = func() {
+//			GetUserFromAuth(request)
+//	}
+//}
 //
 //func SetSession(request *lily.Request, response *lily.Response) {
 //
 //}
 //
-////func Register(handler lily.IHandler) {
-////	handler.Initializer().Register(CheckAuth)
-////	handler.Finalizer().RegisterFinish(SetSession)
-////}
+//func Register(handler lily.IHandler) {
+//	handler.Initializer().Register(CheckAuth)
+//	handler.Finalizer().RegisterFinish(SetSession)
+//}

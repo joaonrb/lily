@@ -24,7 +24,7 @@ func (self *Request) Method() string {
 }
 
 func (self *Request) RemoteAddr() string {
-	return string(self.ctx.RemoteIP())
+	return self.ctx.RemoteIP().String()
 }
 
 type IInitializer interface {

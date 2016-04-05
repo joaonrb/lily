@@ -12,7 +12,7 @@ port: 8000
 # To the name here to be recognised by the middleware installer it must be registered
 # and for that it have to be imported somewhere in your project or manually resisted
 # using the lily.RegisterMiddleware function.
-middlewares:
+middleware:
   - accesslog
 
 # Loggers

@@ -79,7 +79,7 @@ func Run() {
 		}
 	}()
 	fmt.Printf("# Listening at %s\n", address)
-	fmt.Printf("# Use Ctrl+C to close ")
+	fmt.Printf("# Use Ctrl+C to close \n")
 
 	waitForFinish()
 }
