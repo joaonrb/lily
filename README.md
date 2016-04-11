@@ -1,6 +1,6 @@
 Lily
 ====
-[![wercker status](https://app.wercker.com/status/59db38b243305ec2b61104ec51ea0353/s "wercker status")](https://app.wercker.com/project/bykey/59db38b243305ec2b61104ec51ea0353)
+[![Build Status](https://travis-ci.org/joaonrb/lily.svg?branch=master)](https://travis-ci.org/joaonrb/lily)
 
 About
 -----
@@ -15,7 +15,7 @@ I also give it a try to a simple, funcional and, most important, readable routin
 
 Installation
 ------------
-To install Lily, make sure you have installed [Go 1.6](https://storage.googleapis.com/golang/go1.6.src.tar.gz) or later
+To install Lily, make sure you have installed [Go 1.5](https://storage.googleapis.com/golang/go1.6.src.tar.gz) or later
 version correctly.
 
 First get the dependencies:
