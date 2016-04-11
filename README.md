@@ -4,6 +4,10 @@ Lily
 [![codecov.io](https://codecov.io/github/joaonrb/lily/coverage.svg?branch=master)](https://codecov.io/github/joaonrb/lily?branch=master)
 ![codecov.io](https://codecov.io/github/joaonrb/lily/branch.svg?branch=master)
 
+Plan
+----
+Join to Lily plan group in [Trello Group](https://trello.com/invite/lily745/4a8efdb4ab693b2aa263546c8380c249).
+
 About
 -----
 The **Lily** is a webframework(still very simple) using Go language. In this stage is more a wrapper of very good tools
@@ -214,7 +218,4 @@ Wishlist
 
 - Fully covered with unitests
 - Finish the auth app
-- Suport unix sockets
-- Suport Https
 - Nice forms Django style
-- An ORM
