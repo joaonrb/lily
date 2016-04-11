@@ -15,11 +15,20 @@ var(
 )
 
 type Settings struct {
-	Bind       string                  `yaml:"bind,omitempty"`
-	Port       int                     `yaml:"port,omitempty"`
-	Loggers    map[string]LogSettings  `yaml:"loggers,omitempty"`
-	AccessLog  AccessLogSettings       `yaml:"accesslog,omitempty"`
-	Middleware []string                `yaml:"middleware,omitempty"`
+	Bind            string                  `yaml:"bind,omitempty"`
+	Port            int                     `yaml:"port,omitempty"`
+	ReadTimeout     int                     `yaml:"read_timeout,omitempty"`   // In Millis
+	WriteTimeout    int                     `yaml:"write_timeout,omitempty"`  // In Millis
+	UnixSocket      bool                    `yaml:"unix_socket,omitempty"`
+	Https           bool                    `yaml:"https,omitempty"`
+	HttpsPort       int                     `yaml:"https_port,omitempty"`
+	SSLCertificate  string                  `yaml:"ssl_certificate,omitempty"`
+	SSLKey          string                  `yaml:"ssl_key,omitempty"`
+	StaticPath      string                  `yaml:"static_path,omitempty"`
+	StaticFiles     map[string]string       `yaml:"static_files,omitempty"`
+	Loggers         map[string]LogSettings  `yaml:"loggers,omitempty"`
+	AccessLog       AccessLogSettings       `yaml:"accesslog,omitempty"`
+	Middleware      []string                `yaml:"middleware,omitempty"`
 }
 
 type LogSettings struct {

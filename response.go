@@ -6,22 +6,22 @@
 package lily
 
 import (
-	"net/http"
+	"github.com/valyala/fasthttp"
 )
 
 type Response struct {
-	Status  int
-	Headers map[string]string
-	Body    string
-	RW      http.ResponseWriter
+	Status           int
+	Headers          map[string]string
+	Body             string
+	FastHttpResponse *fasthttp.Response
 }
 
 func NewResponse() *Response {
-	return &Response{http.StatusOK, map[string]string{}, "", nil}
+	return &Response{fasthttp.StatusOK, map[string]string{}, "", nil}
 }
 
 type IFinalizer interface {
-	Finish(*Request, *Response, http.ResponseWriter)
+	Finish(*Request, *Response)
 	RegisterPosController(middleware ResponseMiddleware)
 	RegisterFinish(middleware ResponseMiddleware)
 }
@@ -35,15 +35,15 @@ func NewFinalizer() *Finalizer {
 	return &Finalizer{[]ResponseMiddleware{}, []ResponseMiddleware{}}
 }
 
-func (self *Finalizer) Finish(request *Request, response *Response, rw http.ResponseWriter) {
-	response.RW = rw
+func (self *Finalizer) Finish(request *Request, response *Response) {
 	for _, middleware := range self.posControllerMiddleware {
 		middleware(request, response)
 	}
-	for header, value := range response.Headers { response.RW.Header().Add(header, value) }
-	response.RW.WriteHeader(response.Status)
-	response.RW.Write([]byte(response.Body))
-	
+	if response.FastHttpResponse != nil {
+		for header, value := range response.Headers { response.FastHttpResponse.Header.Add(header, value) }
+		response.FastHttpResponse.SetStatusCode(response.Status)
+		response.FastHttpResponse.SetBodyString(response.Body)
+	}
 	for _, middleware := range self.finishMiddleware {
 		middleware(request, response)
 	}

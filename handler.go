@@ -4,9 +4,8 @@
 package lily
 
 import (
-	"net/http"
+	"github.com/valyala/fasthttp"
 	"fmt"
-	"strings"
 )
 
 var mainHandler IHandler
@@ -28,7 +27,8 @@ func defaultHandler() IHandler {
 }
 
 type IHandler interface {
-	ServeHTTP(responseWriter http.ResponseWriter, request *http.Request)
+	ServeHTTP(context *fasthttp.RequestCtx)
+	RegisterStaticPath(uri, path string)
 	Initializer() IInitializer
 	Finalizer() IFinalizer
 }
@@ -39,13 +39,14 @@ type IHandler interface {
 type Handler struct {
 	init   IInitializer
 	finish IFinalizer
+	static map[string]fasthttp.RequestHandler
 }
 
 func NewHandler(init IInitializer, finish IFinalizer) *Handler {
-	return &Handler{init, finish}
+	return &Handler{init, finish, map[string]fasthttp.RequestHandler{}}
 }
 
-func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+func (self *Handler) ServeHTTP(context *fasthttp.RequestCtx) {
 	var response *Response 
 	var lilyRequest *Request
 	defer func() {
@@ -63,44 +64,43 @@ func (self *Handler) ServeHTTP(responseWriter http.ResponseWriter, request *http
 				response = NewHttp500(msg).ToResponse()
 				Error(msg)
 			}
+			response.FastHttpResponse = &(context.Response)
 		}
-		self.finish.Finish(lilyRequest, response, responseWriter)
+		context.SetContentType(lilyRequest.Context[CONTENT_TYPE].(string))
+		self.finish.Finish(lilyRequest, response)
 	}()
-	lilyRequest = self.init.Start(request)
+	lilyRequest = self.init.Start(context)
 
-	controller, params, err := mainRouter.Parse(lilyRequest.URL.Path)
+	path := string(lilyRequest.URI().Path())
+	if static, exist := self.static[path]; exist {
+		static(context)
+		return
+	}
+	controller, params, err := mainRouter.Parse(path)
 	if err != nil {
 		panic(err)
 	}
-	
-	response = self.Handle(controller, lilyRequest, params)
+	for _, middleware := range controller.PreMiddleware() {
+		middleware(lilyRequest)
+	}
+	response = controller.Handle(controller, lilyRequest, params)
+	response.FastHttpResponse = &(context.Response)
+	for _, middleware := range controller.PosMiddleware() {
+		middleware(lilyRequest, response)
+	}
 }
 
-func (self *Handler) Handle(controller IController, request *Request, args map[string]string) *Response {
-	for _, middleware := range controller.PreMiddleware() {
-		middleware(request)
-	}
-	var response *Response
-	switch strings.ToUpper(request.Method) {
-	case "GET":
-		response = controller.Get(request, args)
-	case "POST":
-		response = controller.Post(request, args)
-	case "PUT":
-		response = controller.Put(request, args)
-	case "DELETE":
-		response = controller.Delete(request, args)
-	case "HEAD":
-		response = controller.Head(request, args)
-	case "TRACE":
-		response = controller.Trace(request, args)
-	default:
-		RaiseHttp400("Wrong method")
-	}
-	for _, middleware := range controller.PosMiddleware() {
-		middleware(request, response)
-	}
-	return response
+func (self *Handler) RegisterStaticPath(uri, path string) {
+	self.static[uri] = (&fasthttp.FS{
+		// Path to directory to serve.
+		Root: path,
+
+		// Generate index pages if client requests directory contents.
+		// GenerateIndexPages: true,
+
+		// Enable transparent compression to save network traffic.
+		Compress: true,
+	}).NewRequestHandler()
 }
 
 func (self *Handler) Initializer() IInitializer { return self.init }

@@ -1,12 +1,13 @@
 Lily
 ====
-[![wercker status](https://app.wercker.com/status/59db38b243305ec2b61104ec51ea0353/s "wercker status")](https://app.wercker.com/project/bykey/59db38b243305ec2b61104ec51ea0353)
+[![Build Status](https://travis-ci.org/joaonrb/lily.svg?branch=master)](https://travis-ci.org/joaonrb/lily)
+[![codecov.io](https://codecov.io/github/joaonrb/lily/coverage.svg?branch=master)](https://codecov.io/github/joaonrb/lily?branch=master)
+![codecov.io](https://codecov.io/github/joaonrb/lily/branch.svg?branch=master)
 
 About
 -----
-The **Lily** is a webframework(still very simple) using Go language. Is not(yet) a MVC framework since it don't include
-models or views. So, in order to use ORM models or template engines you have to choose from the 3rd parties. I will not
-sugest any since I don't know much but feel free to add here some.
+The **Lily** is a webframework(still very simple) using Go language. In this stage is more a wrapper of very good tools
+for web development organized in VMC paradigm.
 
 Lily was inspired in Django framework. In particular the way contexts may flow between diferent stages of the request
 processing before arrive and after leaving the controller. Throught middlewares, Django make this behaviour very
@@ -16,19 +17,28 @@ I also give it a try to a simple, funcional and, most important, readable routin
 
 Installation
 ------------
-To install Lily, make sure you have installed [Go 1.6](https://storage.googleapis.com/golang/go1.6.src.tar.gz) or later
+To install Lily, make sure you have installed [Go 1.5](https://storage.googleapis.com/golang/go1.6.src.tar.gz) or later
 version correctly.
 
 First get the dependencies:
 
-- [go-logging](http://github.com/op/go-logging)
-- [yalm](gopkg.in/yaml.v2)
+- [go-logging](https://github.com/op/go-logging)
+- [yalm](https://gopkg.in/yaml.v2)
+- [gorm](https://github.com/jinzhu/gorm)           # For ORM
+- [macaron](https://github.com/go-macaron/cache)   # For cache
+- [fasthttp](https://github.com/valyala/fasthttp)  # Fast and simple web tools
 
 Then get lily.
 
 ```
 $ go get github.com/op/go-logging
 $ go get gopkg.in/yaml.v2
+$ go get github.com/jinzhu/gorm
+$ go get github.com/mattn/go-sqlite3     # For sqlite3
+$ go get github.com/go-sql-driver/mysql  # For MySQL
+$ go get github.com/lib/pq               # For Postgres
+$ go get github.com/go-macaron/cache     # For Caching
+$ go get github.com/valyala/fasthttp     # For the fast stuff
 $ go get github.com/joaonrb/lily
 ```
 
@@ -58,6 +68,7 @@ import (
 type HelloWorldController struct {
 	lily.Controller
 }
+
 func (self *HelloWorldController) Get(request *lily.Request, args map[string]string) *lily.Response {
 	response := lily.NewResponse()
 	response.Body = "<h1>Hello World!</h1>"

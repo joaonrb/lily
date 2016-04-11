@@ -6,16 +6,18 @@
 package lily
 
 import (
-	"net/http"
 	"os"
 	"os/signal"
 	"fmt"
 
+	"time"
+	"github.com/valyala/fasthttp"
 )
 
 const (
-	DEFAULT_PORT  = 5555
-	DEFAULT_BIND  = "127.0.0.1"
+	DEFAULT_PORT        = 5555
+	DEFAULT_HTTPS_PORT  = 443
+	DEFAULT_BIND        = "127.0.0.1"
 )
 
 func Run() {
@@ -26,29 +28,58 @@ func Run() {
 	}
 
 	port := Configuration.Port
-	if port == 0 {
-		port = DEFAULT_PORT
+	if port == 0 { port = DEFAULT_PORT }
+
+	var httpsPort int
+	if Configuration.Https {
+		if Configuration.SSLCertificate == "" || Configuration.SSLKey == "" {
+			fmt.Printf("**Error: Missing ssl certificate or key files in configuration.")
+			os.Exit(1)
+		}
+		httpsPort = Configuration.HttpsPort
+		if httpsPort == 0 { httpsPort = DEFAULT_HTTPS_PORT }
 	}
 	bind := Configuration.Bind
-	if bind == "" {
-		bind = DEFAULT_BIND
-	}
+	if bind == "" { bind = DEFAULT_BIND }
 
+	read_timeout := time.Duration(Configuration.ReadTimeout * 10e6)
+	write_timeout := time.Duration(Configuration.WriteTimeout * 10e6)
+
+	// Register middleware
 	for _, middleware := range Configuration.Middleware {
 		resgistedMiddleware[middleware](mainHandler)
 	}
 
-	http.Handle("/", mainHandler)
-	listener := fmt.Sprintf("%s:%d", bind, port)
+	for uri, path := range Configuration.StaticFiles {
+		mainHandler.RegisterStaticPath(uri, path)
+	}
+
+	address := fmt.Sprintf("%s:%d", bind, port)
+
+	server := &fasthttp.Server{
+		Handler: mainHandler.ServeHTTP,
+		Name: "Lily Server",
+		ReadTimeout: read_timeout,
+		WriteTimeout: write_timeout,
+	}
 	go func() {
-		err := http.ListenAndServe(listener, nil)
+		var err error
+		switch {
+		case Configuration.Https:
+			err = server.ListenAndServeTLS(fmt.Sprintf("%s:%d", bind, httpsPort), Configuration.SSLCertificate,
+				Configuration.SSLKey)
+		case Configuration.UnixSocket:
+			err = server.ListenAndServeUNIX(bind, os.ModePerm)
+		default:
+			err = server.ListenAndServe(fmt.Sprintf("%s:%d", bind, port))
+		}
 		if err != nil {
-			fmt.Printf("**Error starting server**\n%s\n\nExiting. Bye bye...", err.Error())
+			fmt.Printf("\n**Error starting server**\n<<%s>>\n\nExiting. Bye bye...\n", err.Error())
 			os.Exit(1)
 		}
 	}()
-	fmt.Printf("# Listening at %s\n", listener)
-	fmt.Printf("# Use Ctrl+C to close\n")
+	fmt.Printf("# Listening at %s\n", address)
+	fmt.Printf("# Use Ctrl+C to close \n")
 
 	waitForFinish()
 }
@@ -61,7 +92,7 @@ func waitForFinish() {
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
 		for _ = range signalChan {
-			fmt.Println("\n# Server closing...")
+			fmt.Println("\n# Server closing...\n")
 			cleanupDone <- true
 		}
 	}()
