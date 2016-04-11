@@ -4,9 +4,8 @@ Lily
 
 About
 -----
-The **Lily** is a webframework(still very simple) using Go language. Is not(yet) a MVC framework since it don't include
-models or views. So, in order to use ORM models or template engines you have to choose from the 3rd parties. I will not
-sugest any since I don't know much but feel free to add here some.
+The **Lily** is a webframework(still very simple) using Go language. In this stage is more a wrapper of very good tools
+for web development organized in VMC paradigm.
 
 Lily was inspired in Django framework. In particular the way contexts may flow between diferent stages of the request
 processing before arrive and after leaving the controller. Throught middlewares, Django make this behaviour very
@@ -21,9 +20,11 @@ version correctly.
 
 First get the dependencies:
 
-- [go-logging](http://github.com/op/go-logging)
-- [yalm](http://gopkg.in/yaml.v2)
-- [gorm](http://github.com/jinzhu/gorm)  # For ORM
+- [go-logging](https://github.com/op/go-logging)
+- [yalm](https://gopkg.in/yaml.v2)
+- [gorm](https://github.com/jinzhu/gorm)           # For ORM
+- [macaron](https://github.com/go-macaron/cache)   # For cache
+- [fasthttp](https://github.com/valyala/fasthttp)  # Fast and simple web tools
 
 Then get lily.
 
@@ -34,6 +35,8 @@ $ go get github.com/jinzhu/gorm
 $ go get github.com/mattn/go-sqlite3     # For sqlite3
 $ go get github.com/go-sql-driver/mysql  # For MySQL
 $ go get github.com/lib/pq               # For Postgres
+$ go get github.com/go-macaron/cache     # For Caching
+$ go get github.com/valyala/fasthttp     # For the fast stuff
 $ go get github.com/joaonrb/lily
 ```
 

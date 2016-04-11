@@ -1,0 +1,8 @@
+route: /admin
+  controller: AdminController
+  middleware:
+    - session
+    - auth
+  routes:
+    route: /login
+      controller: lily.LoginController
