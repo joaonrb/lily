@@ -2,7 +2,6 @@ Lily
 ====
 [![Build Status](https://travis-ci.org/joaonrb/lily.svg?branch=master)](https://travis-ci.org/joaonrb/lily)
 [![codecov.io](https://codecov.io/github/joaonrb/lily/coverage.svg?branch=master)](https://codecov.io/github/joaonrb/lily?branch=master)
-![codecov.io](https://codecov.io/github/joaonrb/lily/branch.svg?branch=master)
 
 Plan
 ----
@@ -212,6 +211,11 @@ That's it. You have a fully working go server that say hello to people. You can 
 - http://localhost:8000
 - http://localhost:8000/another
 - http://localhost:8000/girl
+
+Coverage
+--------
+
+![codecov.io](https://codecov.io/github/joaonrb/lily/branch.svg?branch=master)
 
 Wishlist
 --------
