@@ -9,7 +9,7 @@ import (
 	"testing"
 	"io/ioutil"
 	"os"
-	"lily"
+	"github.com/joaonrb/lily"
 )
 
 const TMP_LOCATION = "/tmp/lily_sessions_test_parse.yaml"

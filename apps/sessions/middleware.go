@@ -8,8 +8,8 @@
 package sessions
 
 import (
-	"lily"
-	lu "lily/utils"
+	"github.com/joaonrb/lily"
+	lu "github.com/joaonrb/lily/utils"
 	"net/http"
 	"github.com/go-macaron/cache"
 	"fmt"

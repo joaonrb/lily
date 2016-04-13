@@ -4,8 +4,8 @@
 package accesslog
 
 import (
-	"lily"
-	"lily/apps/auth"
+	"github.com/joaonrb/lily"
+	"github.com/joaonrb/lily/apps/auth"
 	"time"
 	"net/http"
 )

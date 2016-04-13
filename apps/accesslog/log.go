@@ -5,7 +5,7 @@ package accesslog
 
 import (
 	"github.com/op/go-logging"
-	"lily"
+	"github.com/joaonrb/lily"
 	"fmt"
 	"os"
 	"io"
