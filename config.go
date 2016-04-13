@@ -29,6 +29,7 @@ type Settings struct {
 	Loggers         map[string]LogSettings  `yaml:"loggers,omitempty"`
 	AccessLog       AccessLogSettings       `yaml:"accesslog,omitempty"`
 	Middleware      []string                `yaml:"middleware,omitempty"`
+	Apps            map[string]interface{}  `yaml:"apps,omitempty"`
 }
 
 type LogSettings struct {

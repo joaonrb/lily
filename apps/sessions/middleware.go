@@ -3,6 +3,8 @@
 // 
 // joaonrb@gmail.com
 //
+// Check cache documentation here: https://go-macaron.com/docs/middlewares/cache
+//
 package sessions
 
 import (
@@ -10,21 +12,12 @@ import (
 	lu "lily/utils"
 	"net/http"
 	"github.com/go-macaron/cache"
-	"strings"
 	"fmt"
 )
 
 var (
 	cacheEngine cache.Cache
 )
-
-func init() {
-	var err error
-	cacheEngine, err = cache.NewCacher("memory", cache.Options{})
-	if err != nil {
-		panic(err)
-	}
-}
 
 const (
 	DEFAULT_SESSION_COOKIE     = "LILYSESSION"
@@ -40,25 +33,66 @@ var (
 )
 
 func init()  {
+	var err error
+	cacheEngine, err = cache.NewCacher("memory", cache.Options{})
+	if err != nil {
+		panic(err)
+	}
 	lily.RegisterMiddleware("sessions", Register)
+}
+
+func LoadCache(conf *lily.Settings) {
+	cacheConf := conf.Apps["cache"].(map[interface{}]interface{})
+	var options cache.Options
+	var err error
+	adapterConfig, exist := cacheConf["adapter_config"]
+	if exist {
+		options = cache.Options{AdapterConfig: adapterConfig.(string)}
+	} else {
+		options = cache.Options{}
+	}
+	cacheEngine, err = cache.NewCacher(cacheConf["type"].(string), options)
+	if err != nil {
+		panic(err)
+	}
 }
 
 type session struct {
 	Cookie  string
 	session map[string]interface{}
+	get     func(*session, string) interface{}
+	set     func(*session, string, interface{})
 }
 
-func (self *session) Get(key string) interface{} {
-	self.load()
+func NewSession(cookie string) *session {
+	return &session{
+		Cookie: cookie,
+		session: nil,
+		get: loadGet,
+		set: loadSet,
+	}
+}
+
+func _get(self *session, key string) interface{} {
 	return self.session[key]
 }
 
-func (self *session) Set(key string, value interface{}) {
-	self.load()
+func (self *session) Get(key string) interface{} {
+	return self.get(self, key)
+}
+
+func _set(self *session, key string, value interface{}) {
 	self.session[key] = value
 }
 
-func (self *session) load() {
+func (self *session) Set(key string, value interface{}) {
+	self.set(self, key, value)
+}
+
+func (self *session) Load() {
+	defer func() {
+		self.get, self.set = _get, _set
+	}()
 	if self.session == nil {
 		if len(self.Cookie) != 0 {
 			tmp := cacheEngine.Get(fmt.Sprintf("%s_%s", SESSION, self.Cookie))
@@ -71,12 +105,22 @@ func (self *session) load() {
 	}
 }
 
+func loadGet(self *session, key string) interface{} {
+	self.Load()
+	return self.Get(key)
+}
+
+func loadSet(self *session, key string, value interface{}) {
+	self.Load()
+	self.Set(key, value)
+}
+
 func GetSession(request *lily.Request) *session {
 	return request.Context[SESSION].(*session)
 }
 
 func CheckSession(request *lily.Request) {
-	request.Context[SESSION] = &session{string(request.Header.Cookie(cookieName)), nil}
+	request.Context[SESSION] = NewSession(string(request.Header.Cookie(cookieName)))
 }
 
 func SetSession(request *lily.Request, response *lily.Response) {
@@ -90,7 +134,7 @@ func SetSession(request *lily.Request, response *lily.Response) {
 		}
 		response.Headers["Set-Cookie"] = cookie.String()
 	}
-	go cacheEngine.Put(session.Cookie, session.session, cookieTimeout * 60 * 60)
+	go cacheEngine.Put(session.Cookie, session.session, int64(cookieTimeout * 60 * 60))
 }
 
 func Register(handler lily.IHandler) {
