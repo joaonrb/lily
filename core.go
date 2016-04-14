@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"fmt"
-
 	"time"
 	"github.com/valyala/fasthttp"
 )
@@ -83,7 +82,6 @@ func Run() {
 
 	waitForFinish()
 }
-
 
 // Code rented from http://nathanleclaire.com/blog/2014/08/24/handling-ctrl-c-interrupt-signal-in-golang-programs/
 func waitForFinish() {

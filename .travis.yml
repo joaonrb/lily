@@ -14,9 +14,10 @@ install:
   - go get github.com/lib/pq
   - go get github.com/go-macaron/cache
   - go get github.com/valyala/fasthttp
-  - go build ../lily
+  - go get github.com/joaonrb/lily
 
-script: go test ../lily -v -coverprofile=coverage.txt -covermode=atomic
+script:
+  - go test github.com/joaonrb/lily -v -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
