@@ -1,6 +1,6 @@
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 // Check cache documentation here: https://go-macaron.com/docs/middlewares/cache
@@ -8,9 +8,9 @@
 package lily
 
 import (
-	"net/http"
-	"github.com/go-macaron/cache"
 	"fmt"
+	"github.com/go-macaron/cache"
+	"net/http"
 )
 
 var (
@@ -18,10 +18,10 @@ var (
 )
 
 const (
-	DEFAULT_SESSION_COOKIE     = "LILYSESSION"
-	DEFAULT_SESSION_LENGTH     = 10
-	SESSION                    = "session"
-	DEFAULT_SESSION_TIMEOUT    = 12  // In hours
+	DEFAULT_SESSION_COOKIE  = "LILYSESSION"
+	DEFAULT_SESSION_LENGTH  = 10
+	SESSION                 = "session"
+	DEFAULT_SESSION_TIMEOUT = 12 // In hours
 )
 
 var (
@@ -30,7 +30,7 @@ var (
 	cookieTimeout = DEFAULT_SESSION_TIMEOUT
 )
 
-func init()  {
+func init() {
 	var err error
 	cacheEngine, err = cache.NewCacher("memory", cache.Options{})
 	if err != nil {
@@ -64,10 +64,10 @@ type session struct {
 
 func NewSession(cookie string) *session {
 	return &session{
-		Cookie: cookie,
+		Cookie:  cookie,
 		session: nil,
-		get: loadGet,
-		set: loadSet,
+		get:     loadGet,
+		set:     loadSet,
 	}
 }
 
@@ -126,13 +126,13 @@ func SetSession(request *Request, response *Response) {
 	if len(session.Cookie) == 0 {
 		session.Cookie = GenerateBase64String(cookieLength)
 		cookie := &http.Cookie{
-			Name: cookieName,
+			Name:  cookieName,
 			Value: session.Cookie,
-			Path: "/",
+			Path:  "/",
 		}
 		response.Headers["Set-Cookie"] = cookie.String()
 	}
-	go cacheEngine.Put(session.Cookie, session.session, int64(cookieTimeout * 60 * 60))
+	go cacheEngine.Put(session.Cookie, session.session, int64(cookieTimeout*60*60))
 }
 
 func Register(handler IHandler) {

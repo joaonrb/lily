@@ -6,8 +6,8 @@
 package lily
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 var (
@@ -44,7 +44,7 @@ func (self *HttpError) Error() string {
 	return self.err
 }
 
-type Http400 struct{
+type Http400 struct {
 	HttpError
 }
 
@@ -56,7 +56,7 @@ func RaiseHttp400(err string) {
 	panic(NewHttp400(err))
 }
 
-type Http404 struct{
+type Http404 struct {
 	HttpError
 }
 
@@ -83,7 +83,7 @@ func RaiseHttp500(err string) { panic(NewHttp500(err)) }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 type PathAlreadyExist struct {
-	path  string
+	path string
 }
 
 func (self *PathAlreadyExist) Error() string {

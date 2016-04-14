@@ -1,14 +1,14 @@
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 package lily
 
 import (
-	"testing"
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 const SESSION_LOCATION = "/tmp/lily_sessions_test_parse.yaml"
@@ -19,7 +19,7 @@ apps:
     type: memory
 `
 
-func TestSessionGet(t *testing.T)  {
+func TestSessionGet(t *testing.T) {
 	defer os.Remove(SESSION_LOCATION)
 	err := ioutil.WriteFile(SESSION_LOCATION, []byte(SESSION_SETTINGS_EXAMPLE), 0644)
 	if err != nil {

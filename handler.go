@@ -4,8 +4,8 @@
 package lily
 
 import (
-	"github.com/valyala/fasthttp"
 	"fmt"
+	"github.com/valyala/fasthttp"
 )
 
 var mainHandler IHandler
@@ -47,7 +47,7 @@ func NewHandler(init IInitializer, finish IFinalizer) *Handler {
 }
 
 func (self *Handler) ServeHTTP(context *fasthttp.RequestCtx) {
-	var response *Response 
+	var response *Response
 	var lilyRequest *Request
 	defer func() {
 		err := recover()

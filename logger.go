@@ -6,18 +6,18 @@
 package lily
 
 import (
-	"github.com/op/go-logging"
-	"os"
-	"io"
-	"strings"
 	"fmt"
+	"github.com/op/go-logging"
+	"io"
+	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
 var log = logging.MustGetLogger("lily")
 
-func init()  {
+func init() {
 	log.ExtraCalldepth = 1
 }
 
@@ -40,14 +40,14 @@ const (
 
 // Log default settings
 const (
-	DEFAULT_LOGGER_TYPE    = "console"
-	DEFAULT_LOGGER_PATH    = ""
-	DEFAULT_LOGGER_LAYOUT  = "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
-	DEFAULT_LOGGER_LEVEL   = INFO
+	DEFAULT_LOGGER_TYPE   = "console"
+	DEFAULT_LOGGER_PATH   = ""
+	DEFAULT_LOGGER_LAYOUT = "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
+	DEFAULT_LOGGER_LEVEL  = INFO
 )
 
 var (
-	LOGGING_LEVELS = map[string]logging.Level {
+	LOGGING_LEVELS = map[string]logging.Level{
 		CRITICAL: logging.CRITICAL,
 		ERROR:    logging.ERROR,
 		WARNING:  logging.WARNING,
@@ -105,8 +105,8 @@ func LoadLogger() {
 
 type RotatorWriter struct {
 	doRotation bool
-	file *os.File
-	filePath string
+	file       *os.File
+	filePath   string
 }
 
 func OpenRotatorFile(path string) io.Writer {
@@ -121,9 +121,9 @@ func OpenRotatorFile(path string) io.Writer {
 	rotator := &RotatorWriter{doRotation: false, file: out, filePath: path}
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGUSR1)
-	go func (rot *RotatorWriter) {
+	go func(rot *RotatorWriter) {
 		for {
-			<- c
+			<-c
 			rotator.doRotation = true
 			Info("Rotate order caught for file '%s'", path)
 		}

@@ -58,9 +58,9 @@ type IRouter interface {
 // Router node
 // It holds the possible flat routes and after that the regex routes.
 type routerNode struct {
-	flatRoutes   map[string]*routerNode
-	regexRoutes  map[string]*regexNode
-	controller   IController
+	flatRoutes  map[string]*routerNode
+	regexRoutes map[string]*regexNode
+	controller  IController
 }
 
 func newRouterNode() *routerNode {
@@ -69,8 +69,9 @@ func newRouterNode() *routerNode {
 
 type regexNode struct {
 	*routerNode
-	regex  *regexp.Regexp
+	regex *regexp.Regexp
 }
+
 // Simple router
 // Search for the flat routes first and the regex after. At the end returns the controller.
 type Router struct {
@@ -78,8 +79,8 @@ type Router struct {
 }
 
 type Way struct {
-	Path        string
-	Controller  IController
+	Path       string
+	Controller IController
 }
 
 // TODO: Do test
@@ -88,7 +89,9 @@ func (self *Router) Parse(path string) (IController, map[string]string, error) {
 	thisRoute := self.route
 	params := map[string]string{}
 	for _, way := range ways {
-		if way == "" { continue }
+		if way == "" {
+			continue
+		}
 		if newRoute, ok := thisRoute.flatRoutes[way]; ok {
 			thisRoute = newRoute
 		} else {
@@ -130,7 +133,7 @@ func (self *Router) Register(path string, controller IController) error {
 				thisRoute = thisRoute.regexRoutes[regexString].routerNode
 			}
 		default:
-			if router, ok :=  thisRoute.flatRoutes[way]; ok {
+			if router, ok := thisRoute.flatRoutes[way]; ok {
 				thisRoute = router
 			} else {
 				thisRoute.flatRoutes[way] = newRouterNode()

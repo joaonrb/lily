@@ -1,16 +1,16 @@
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 package lily
 
 import (
 	"bufio"
-	"os"
 	"io"
-	"time"
 	"math/rand"
+	"os"
+	"time"
 )
 
 // File iterator line by line
@@ -34,8 +34,8 @@ func NewLineIterator(filename string) (*lineIterator, error) {
 
 func readLine(r *bufio.Reader) (string, error) {
 	var (
-		isPrefix bool = true
-		err error = nil
+		isPrefix bool  = true
+		err      error = nil
 		line, ln []byte
 	)
 	for isPrefix && err == nil {
@@ -47,7 +47,9 @@ func readLine(r *bufio.Reader) (string, error) {
 
 func (self *lineIterator) Next() string {
 	line, err := readLine(self.buffer)
-	if err == io.EOF { self.hasNext = false }
+	if err == io.EOF {
+		self.hasNext = false
+	}
 	return line
 }
 
@@ -60,7 +62,6 @@ func (self *lineIterator) Close() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 const symbols = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-"
 const (
@@ -80,9 +81,9 @@ func GenerateBase64Bytes(n int) []byte {
 		if remain == 0 {
 			cache, remain = random.Int63(), letterIdxMax
 		}
-		result[i] = symbols[int(cache & letterIdxMask)]  // Cache & letter = the first 6 bits of cache (0-63 rand)
+		result[i] = symbols[int(cache&letterIdxMask)] // Cache & letter = the first 6 bits of cache (0-63 rand)
 
-		cache >>= letterIdxBits  // Shift 6 bits
+		cache >>= letterIdxBits // Shift 6 bits
 		remain--
 	}
 	return result
@@ -91,4 +92,3 @@ func GenerateBase64Bytes(n int) []byte {
 func GenerateBase64String(n int) string {
 	return string(GenerateBase64Bytes(n))
 }
-

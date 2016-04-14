@@ -15,8 +15,8 @@ type Context map[string]interface{}
 
 type Request struct {
 	*fasthttp.Request
-	Context      Context
-	ctx          *fasthttp.RequestCtx
+	Context Context
+	ctx     *fasthttp.RequestCtx
 }
 
 func (self *Request) Method() string {
@@ -43,8 +43,8 @@ func NewRequestInitializer() *RequestInitializer {
 func (self *RequestInitializer) Start(request *fasthttp.RequestCtx) *Request {
 	lilyRequest := &Request{
 		Request: &request.Request,
-		Context: Context {CONTENT_TYPE: "text/html"},
-		ctx: request,
+		Context: Context{CONTENT_TYPE: "text/html"},
+		ctx:     request,
 	}
 	for _, middleware := range self.middleware {
 		middleware(lilyRequest)

@@ -1,22 +1,22 @@
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 package lily
 
 import (
+	"fmt"
+	"github.com/valyala/fasthttp"
 	"os"
 	"os/signal"
-	"fmt"
 	"time"
-	"github.com/valyala/fasthttp"
 )
 
 const (
-	DEFAULT_PORT        = 5555
-	DEFAULT_HTTPS_PORT  = 443
-	DEFAULT_BIND        = "127.0.0.1"
+	DEFAULT_PORT       = 5555
+	DEFAULT_HTTPS_PORT = 443
+	DEFAULT_BIND       = "127.0.0.1"
 )
 
 func Run() {
@@ -27,7 +27,9 @@ func Run() {
 	}
 
 	port := Configuration.Port
-	if port == 0 { port = DEFAULT_PORT }
+	if port == 0 {
+		port = DEFAULT_PORT
+	}
 
 	var httpsPort int
 	if Configuration.Https {
@@ -36,10 +38,14 @@ func Run() {
 			os.Exit(1)
 		}
 		httpsPort = Configuration.HttpsPort
-		if httpsPort == 0 { httpsPort = DEFAULT_HTTPS_PORT }
+		if httpsPort == 0 {
+			httpsPort = DEFAULT_HTTPS_PORT
+		}
 	}
 	bind := Configuration.Bind
-	if bind == "" { bind = DEFAULT_BIND }
+	if bind == "" {
+		bind = DEFAULT_BIND
+	}
 
 	read_timeout := time.Duration(Configuration.ReadTimeout * 10e6)
 	write_timeout := time.Duration(Configuration.WriteTimeout * 10e6)
@@ -56,9 +62,9 @@ func Run() {
 	address := fmt.Sprintf("%s:%d", bind, port)
 
 	server := &fasthttp.Server{
-		Handler: mainHandler.ServeHTTP,
-		Name: "Lily Server",
-		ReadTimeout: read_timeout,
+		Handler:      mainHandler.ServeHTTP,
+		Name:         "Lily Server",
+		ReadTimeout:  read_timeout,
 		WriteTimeout: write_timeout,
 	}
 	go func() {

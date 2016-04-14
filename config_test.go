@@ -1,14 +1,14 @@
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 package lily
 
 import (
-	"testing"
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 const TMP_LOCATION = "/tmp/lily_test_parse.yaml"
@@ -24,7 +24,7 @@ accesslog:
   type: console
 `
 
-func TestParse(t *testing.T)  {
+func TestParse(t *testing.T) {
 	defer os.Remove(TMP_LOCATION)
 	err := ioutil.WriteFile(TMP_LOCATION, []byte(YAML_SETTINGS_EXAMPLE), 0644)
 	if err != nil {
@@ -45,10 +45,10 @@ func TestParse(t *testing.T)  {
 		t.Errorf("Loggers size is %d and 1 is expected", len(Configuration.Loggers))
 	case Configuration.Loggers["default"].Type != "console":
 		t.Errorf("Logger type is \"%s\" and \"console\" is expected", Configuration.Loggers["default"].Type)
-	case Configuration.Loggers["default"].Layout != "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} " +
+	case Configuration.Loggers["default"].Layout != "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} "+
 		"%{message}":
 		t.Errorf("Logger layout is \"%s\" and \"%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}\""+
-		"is expected", Configuration.Loggers["default"].Layout)
+			"is expected", Configuration.Loggers["default"].Layout)
 	case Configuration.Loggers["default"].Level != "debug":
 		t.Error("logger level is \"%s\" and \"debug\" is expected", Configuration.Loggers["default"].Level)
 	}

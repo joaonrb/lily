@@ -1,15 +1,15 @@
+package lily
 //
 // Author João Nuno.
 //
-package lily
 
 import (
-	"github.com/op/go-logging"
 	"fmt"
-	"os"
+	"github.com/op/go-logging"
 	"io"
-	"time"
 	"net/http"
+	"os"
+	"time"
 )
 
 var accesslog *logging.Logger
@@ -37,10 +37,10 @@ func LoadAccessLogger() {
 
 const (
 	REQUEST_START = "__start__"
-	TIME_FORMAT = "02/Jan/2006:15:04:05Z0700"
+	TIME_FORMAT   = "02/Jan/2006:15:04:05Z0700"
 )
 
-func init()  {
+func init() {
 	RegisterMiddleware("accesslog", AccesslogRegister)
 }
 
@@ -59,7 +59,10 @@ func FinishRequestForLog(request *Request, response *Response) {
 	ip := request.RemoteAddr()
 	method := request.Method()
 	path := string(request.RequestURI())
-	httpVersion := "HTTP1.1"; if !request.Header.IsHTTP11() { httpVersion = "HTTP1.0'" }
+	httpVersion := "HTTP1.1"
+	if !request.Header.IsHTTP11() {
+		httpVersion = "HTTP1.0'"
+	}
 	start := request.Context[REQUEST_START].(time.Time)
 	accesslog.Infof(
 		"%s [%s] \"%s %s %s\" %d %d %s", ip, time.Now().Format(TIME_FORMAT), method, path, httpVersion,

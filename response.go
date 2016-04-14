@@ -40,7 +40,9 @@ func (self *Finalizer) Finish(request *Request, response *Response) {
 		middleware(request, response)
 	}
 	if response.FastHttpResponse != nil {
-		for header, value := range response.Headers { response.FastHttpResponse.Header.Add(header, value) }
+		for header, value := range response.Headers {
+			response.FastHttpResponse.Header.Add(header, value)
+		}
 		response.FastHttpResponse.SetStatusCode(response.Status)
 		response.FastHttpResponse.SetBodyString(response.Body)
 	}
