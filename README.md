@@ -223,3 +223,7 @@ Wishlist
 - Fully covered with unitests
 - Finish the auth app
 - Nice forms Django style
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/joaonrb/lily/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
