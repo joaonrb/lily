@@ -3,37 +3,36 @@
 // 
 // joaonrb@gmail.com
 //
-package sessions
+package lily
 
 import (
 	"testing"
 	"io/ioutil"
 	"os"
-	"github.com/joaonrb/lily"
 )
 
-const TMP_LOCATION = "/tmp/lily_sessions_test_parse.yaml"
+const SESSION_LOCATION = "/tmp/lily_sessions_test_parse.yaml"
 
-const YAML_SETTINGS_EXAMPLE = `
+const SESSION_SETTINGS_EXAMPLE = `
 apps:
   cache:
     type: memory
 `
 
 func TestSessionGet(t *testing.T)  {
-	defer os.Remove(TMP_LOCATION)
-	err := ioutil.WriteFile(TMP_LOCATION, []byte(YAML_SETTINGS_EXAMPLE), 0644)
+	defer os.Remove(SESSION_LOCATION)
+	err := ioutil.WriteFile(SESSION_LOCATION, []byte(SESSION_SETTINGS_EXAMPLE), 0644)
 	if err != nil {
 		t.Fatalf("Tmp file couldn't be writen becauser error %s", err.Error())
 	}
 
 	// Starting test
-	err = lily.Init(TMP_LOCATION)
+	err = Init(SESSION_LOCATION)
 	if err != nil {
 		t.Fatalf("Couldn't init configuration because error %s", err.Error())
 	}
 
-	LoadCache(lily.Configuration)
+	LoadCache(Configuration)
 	sessionDummy := NewSession("dummy")
 	if sessionDummy.session != nil {
 		t.Error("Session attribute in dummy should be nil.")

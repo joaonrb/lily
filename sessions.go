@@ -5,11 +5,9 @@
 //
 // Check cache documentation here: https://go-macaron.com/docs/middlewares/cache
 //
-package sessions
+package lily
 
 import (
-	"github.com/joaonrb/lily"
-	lu "github.com/joaonrb/lily/utils"
 	"net/http"
 	"github.com/go-macaron/cache"
 	"fmt"
@@ -38,10 +36,10 @@ func init()  {
 	if err != nil {
 		panic(err)
 	}
-	lily.RegisterMiddleware("sessions", Register)
+	RegisterMiddleware("sessions", Register)
 }
 
-func LoadCache(conf *lily.Settings) {
+func LoadCache(conf *Settings) {
 	cacheConf := conf.Apps["cache"].(map[interface{}]interface{})
 	var options cache.Options
 	var err error
@@ -115,18 +113,18 @@ func loadSet(self *session, key string, value interface{}) {
 	self.Set(key, value)
 }
 
-func GetSession(request *lily.Request) *session {
+func GetSession(request *Request) *session {
 	return request.Context[SESSION].(*session)
 }
 
-func CheckSession(request *lily.Request) {
+func CheckSession(request *Request) {
 	request.Context[SESSION] = NewSession(string(request.Header.Cookie(cookieName)))
 }
 
-func SetSession(request *lily.Request, response *lily.Response) {
+func SetSession(request *Request, response *Response) {
 	session := GetSession(request)
 	if len(session.Cookie) == 0 {
-		session.Cookie = lu.GenerateBase64String(cookieLength)
+		session.Cookie = GenerateBase64String(cookieLength)
 		cookie := &http.Cookie{
 			Name: cookieName,
 			Value: session.Cookie,
@@ -137,7 +135,7 @@ func SetSession(request *lily.Request, response *lily.Response) {
 	go cacheEngine.Put(session.Cookie, session.session, int64(cookieTimeout * 60 * 60))
 }
 
-func Register(handler lily.IHandler) {
+func Register(handler IHandler) {
 	handler.Initializer().Register(CheckSession)
 	handler.Finalizer().RegisterFinish(SetSession)
 }
