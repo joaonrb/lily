@@ -2,6 +2,7 @@ Lily
 ====
 [![Build Status](https://travis-ci.org/joaonrb/lily.svg?branch=master)](https://travis-ci.org/joaonrb/lily)
 [![codecov.io](https://codecov.io/github/joaonrb/lily/coverage.svg?branch=master)](https://codecov.io/github/joaonrb/lily?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/joaonrb/lily)](https://goreportcard.com/report/github.com/joaonrb/lily)
 
 Plan
 ----
