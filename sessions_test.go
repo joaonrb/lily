@@ -50,3 +50,34 @@ func TestSessionSetGetFlowForString(t *testing.T) {
 		t.Error("Message from cache not the one expected. Expected \"F you Steve\" Got \"%s\" instead", message)
 	}
 }
+
+func TestSessionSetGetFlowForInt(t *testing.T) {
+	sessionDummy := NewSession("SetGetFlowForIntDummy")
+	sessionDummy.Set("age", 29)
+	SaveSession(sessionDummy.Cookie, sessionDummy.session)
+
+	sessionSteve := NewSession("SetGetFlowForIntDummy")
+	age := sessionSteve.Get("age")
+	if age != 29 {
+		t.Error("Message from cache not the one expected. Expected 29 Got %d instead", age)
+	}
+}
+
+func TestSessionSetGetFlowForStruct(t *testing.T) {
+	type dummy struct {
+		name string
+		age  int
+	}
+	sessionDummy := NewSession("SetGetFlowForStructDummy")
+	sessionDummy.Set("person", &dummy{"João", 29})
+	SaveSession(sessionDummy.Cookie, sessionDummy.session)
+
+	sessionSteve := NewSession("SetGetFlowForStructDummy")
+	me := sessionSteve.Get("person").(*dummy)
+	if me.name != "João" {
+		t.Error("Dummy name not the one expected. Expected \"João\" Got \"%s\" instead", me.name)
+	}
+	if me.age != 29 {
+		t.Error("Dummy age not the one expected. Expected 29 Got %d instead", me.age)
+	}
+}
