@@ -28,7 +28,6 @@ First get the dependencies:
 
 - [go-logging](https://github.com/op/go-logging)
 - [yalm](https://gopkg.in/yaml.v2)
-- [gorm](https://github.com/jinzhu/gorm)           # For ORM
 - [macaron](https://github.com/go-macaron/cache)   # For cache
 - [fasthttp](https://github.com/valyala/fasthttp)  # Fast and simple web tools
 
@@ -37,10 +36,6 @@ Then get lily.
 ```
 $ go get github.com/op/go-logging
 $ go get gopkg.in/yaml.v2
-$ go get github.com/jinzhu/gorm
-$ go get github.com/mattn/go-sqlite3     # For sqlite3
-$ go get github.com/go-sql-driver/mysql  # For MySQL
-$ go get github.com/lib/pq               # For Postgres
 $ go get github.com/go-macaron/cache     # For Caching
 $ go get github.com/valyala/fasthttp     # For the fast stuff
 $ go get github.com/joaonrb/lily
@@ -222,7 +217,6 @@ Wishlist
 --------
 
 - Fully covered with unitests
-- Finish the auth app
 - Nice forms Django style
 
 
