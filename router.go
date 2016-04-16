@@ -1,3 +1,4 @@
+package lily
 //
 // Author João Nuno.
 //
@@ -5,7 +6,6 @@
 // Package router loads a string in format:
 // "/path1/path2/:(?P<parameter>\d+)" ExampleController
 //
-package lily
 
 import (
 	"regexp"

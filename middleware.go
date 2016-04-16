@@ -1,9 +1,9 @@
+package lily
 //
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
-package lily
 
 var middlewares = map[string]func(handler IHandler){}
 

@@ -1,3 +1,4 @@
+package lily
 //
 // Author João Nuno.
 //
@@ -5,7 +6,6 @@
 //
 // Check cache documentation here: https://go-macaron.com/docs/middlewares/cache
 //
-package lily
 
 import (
 	"fmt"

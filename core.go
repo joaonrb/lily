@@ -1,9 +1,9 @@
+package lily
 //
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
-package lily
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 
 const (
 	defaultPort      = 5555
-	defaultHttpsPort = 443
+	defaultHTTPSPort = 443
 	defaultBinding   = "127.0.0.1"
 )
 
@@ -39,7 +39,7 @@ func Run() {
 		}
 		httpsPort = Configuration.HttpsPort
 		if httpsPort == 0 {
-			httpsPort = defaultHttpsPort
+			httpsPort = defaultHTTPSPort
 		}
 	}
 	bind := Configuration.Bind

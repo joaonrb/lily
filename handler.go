@@ -1,7 +1,7 @@
+package lily
 //
 // Author João Nuno.
 //
-package lily
 
 import (
 	"fmt"
