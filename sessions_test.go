@@ -7,34 +7,11 @@ package lily
 //
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
-const sessionTestSettingsLocation = "/tmp/lily_sessions_test_parse.yaml"
-
-const sessionTestSettings = `
-apps:
-  cache:
-    type: memory
-`
-
-func TestSessionGet(t *testing.T) {
-	defer os.Remove(sessionTestSettingsLocation)
-	err := ioutil.WriteFile(sessionTestSettingsLocation, []byte(sessionTestSettings), 0644)
-	if err != nil {
-		t.Fatalf("Tmp file couldn't be writen becauser error %s", err.Error())
-	}
-
-	// Starting test
-	err = Init(sessionTestSettingsLocation)
-	if err != nil {
-		t.Fatalf("Couldn't init configuration because error %s", err.Error())
-	}
-
-	LoadCache(Configuration)
-	sessionDummy := NewSession("dummy")
+func TestSessionLazinessOnGet(t *testing.T) {
+	sessionDummy := NewSession("LazinessOnGetDummy")
 	if sessionDummy.session != nil {
 		t.Error("Session attribute in dummy should be nil.")
 	}
@@ -47,5 +24,29 @@ func TestSessionGet(t *testing.T) {
 	if sessionDummy.session == nil {
 		t.Error("Session attribute in dummy should not be nil anymore.")
 	}
+}
 
+func TestSessionLazinessOnSet(t *testing.T) {
+	sessionDummy := NewSession("LazinessOnSetDummy")
+	if sessionDummy.session != nil {
+		t.Error("Session attribute in dummy should be nil.")
+	}
+
+	sessionDummy.Set("Pinokio", "lie")
+
+	if sessionDummy.session == nil {
+		t.Error("Session attribute in dummy should not be nil anymore.")
+	}
+}
+
+func TestSessionSetGetFlowForString(t *testing.T) {
+	sessionDummy := NewSession("SetGetFlowForStringDummy")
+	sessionDummy.Set("Message", "F you Steve")
+	SaveSession(sessionDummy.Cookie, sessionDummy.session)
+
+	sessionSteve := NewSession("SetGetFlowForStringDummy")
+	message := sessionSteve.Get("Message")
+	if message != "F you Steve" {
+		t.Error("Message from cache not the one expected. Expected \"F you Steve\" Got \"%s\" instead", message)
+	}
 }

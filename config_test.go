@@ -7,36 +7,10 @@ package lily
 //
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
-const configTestSettingsLocation = "/tmp/lily_test_parse.yaml"
-
-const configTestSettings = `
-loggers:
-  default:
-    type:   console
-    layout: "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
-    level:  debug
-
-accesslog:
-  type: console
-`
-
 func TestParse(t *testing.T) {
-	defer os.Remove(configTestSettingsLocation)
-	err := ioutil.WriteFile(configTestSettingsLocation, []byte(configTestSettings), 0644)
-	if err != nil {
-		t.Fatalf("Tmp file couldn't be writen becauser error %s", err.Error())
-	}
-
-	// Starting test
-	err = Init(configTestSettingsLocation)
-	if err != nil {
-		t.Fatalf("Couldn't init configuration because error %s", err.Error())
-	}
 
 	// Test loggers
 	switch {
