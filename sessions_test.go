@@ -11,23 +11,23 @@ import (
 	"testing"
 )
 
-const SESSION_LOCATION = "/tmp/lily_sessions_test_parse.yaml"
+const sessionTestSettingsLocation = "/tmp/lily_sessions_test_parse.yaml"
 
-const SESSION_SETTINGS_EXAMPLE = `
+const sessionTestSettings = `
 apps:
   cache:
     type: memory
 `
 
 func TestSessionGet(t *testing.T) {
-	defer os.Remove(SESSION_LOCATION)
-	err := ioutil.WriteFile(SESSION_LOCATION, []byte(SESSION_SETTINGS_EXAMPLE), 0644)
+	defer os.Remove(sessionTestSettingsLocation)
+	err := ioutil.WriteFile(sessionTestSettingsLocation, []byte(sessionTestSettings), 0644)
 	if err != nil {
 		t.Fatalf("Tmp file couldn't be writen becauser error %s", err.Error())
 	}
 
 	// Starting test
-	err = Init(SESSION_LOCATION)
+	err = Init(sessionTestSettingsLocation)
 	if err != nil {
 		t.Fatalf("Couldn't init configuration because error %s", err.Error())
 	}

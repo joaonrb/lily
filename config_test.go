@@ -11,9 +11,9 @@ import (
 	"testing"
 )
 
-const TMP_LOCATION = "/tmp/lily_test_parse.yaml"
+const configTestSettingsLocation = "/tmp/lily_test_parse.yaml"
 
-const YAML_SETTINGS_EXAMPLE = `
+const configTestSettings = `
 loggers:
   default:
     type:   console
@@ -25,14 +25,14 @@ accesslog:
 `
 
 func TestParse(t *testing.T) {
-	defer os.Remove(TMP_LOCATION)
-	err := ioutil.WriteFile(TMP_LOCATION, []byte(YAML_SETTINGS_EXAMPLE), 0644)
+	defer os.Remove(configTestSettingsLocation)
+	err := ioutil.WriteFile(configTestSettingsLocation, []byte(configTestSettings), 0644)
 	if err != nil {
 		t.Fatalf("Tmp file couldn't be writen becauser error %s", err.Error())
 	}
 
 	// Starting test
-	err = Init(TMP_LOCATION)
+	err = Init(configTestSettingsLocation)
 	if err != nil {
 		t.Fatalf("Couldn't init configuration because error %s", err.Error())
 	}

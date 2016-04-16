@@ -22,7 +22,7 @@ func init() {
 }
 
 const (
-	LOGGER_PERMISSIONS = 0666
+	loggerPermissions = 0666
 )
 
 const (
@@ -40,10 +40,10 @@ const (
 
 // Log default settings
 const (
-	DEFAULT_LOGGER_TYPE   = "console"
-	DEFAULT_LOGGER_PATH   = ""
-	DEFAULT_LOGGER_LAYOUT = "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
-	DEFAULT_LOGGER_LEVEL  = INFO
+	defaultLoggerType   = "console"
+	defaultLoggerPath   = ""
+	defaultLoggerLayout = "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
+	defaultLoggerLevel  = INFO
 )
 
 var (
@@ -103,25 +103,25 @@ func LoadLogger() {
 	log.SetBackend(logging.MultiLogger(loggers...))
 }
 
-type RotatorWriter struct {
+type RotatoryWriter struct {
 	doRotation bool
 	file       *os.File
 	filePath   string
 }
 
 func OpenRotatorFile(path string) io.Writer {
-	out, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, LOGGER_PERMISSIONS)
+	out, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 	if err != nil {
 		panic(
 			fmt.Errorf(
-				"Failed to open log file %s with permissions %d: %s", path, LOGGER_PERMISSIONS, err,
+				"Failed to open log file %s with permissions %d: %s", path, loggerPermissions, err,
 			),
 		)
 	}
-	rotator := &RotatorWriter{doRotation: false, file: out, filePath: path}
+	rotator := &RotatoryWriter{doRotation: false, file: out, filePath: path}
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGUSR1)
-	go func(rot *RotatorWriter) {
+	go func(rot *RotatoryWriter) {
 		for {
 			<-c
 			rotator.doRotation = true
@@ -131,15 +131,15 @@ func OpenRotatorFile(path string) io.Writer {
 	return rotator
 }
 
-func (self *RotatorWriter) Write(p []byte) (n int, err error) {
+func (self *RotatoryWriter) Write(p []byte) (n int, err error) {
 	if self.doRotation {
 		self.doRotation = false
 		self.file.Close()
-		out, err := os.OpenFile(self.filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, LOGGER_PERMISSIONS)
+		out, err := os.OpenFile(self.filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 		if err != nil {
 			panic(
 				fmt.Errorf(
-					"Failed to open log file %s with permissions %d: %s", self.filePath, LOGGER_PERMISSIONS, err,
+					"Failed to open log file %s with permissions %d: %s", self.filePath, loggerPermissions, err,
 				),
 			)
 		}

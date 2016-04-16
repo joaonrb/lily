@@ -1,4 +1,5 @@
 package lily
+
 //
 // Author João Nuno.
 //
@@ -12,14 +13,14 @@ import (
 	"time"
 )
 
-var accesslog *logging.Logger
+var accessLog *logging.Logger
 
 func LoadAccessLogger() {
 	settings := Configuration
 	if settings.AccessLog.Type == "" {
 		panic(fmt.Errorf("Trying to use accesslog middleware without configure the path for it"))
 	}
-	accesslog = logging.MustGetLogger("accesslog")
+	accessLog = logging.MustGetLogger("accesslog")
 	var out io.Writer
 	switch settings.AccessLog.Type {
 	case CONSOLE:
@@ -32,24 +33,24 @@ func LoadAccessLogger() {
 	beFormatter := logging.NewBackendFormatter(logger, logging.MustStringFormatter("%{message}"))
 	beLevel := logging.AddModuleLevel(beFormatter)
 	beLevel.SetLevel(logging.INFO, "")
-	accesslog.SetBackend(beLevel)
+	accessLog.SetBackend(beLevel)
 }
 
 const (
-	REQUEST_START = "__start__"
-	TIME_FORMAT   = "02/Jan/2006:15:04:05Z0700"
+	RequestStart = "__start__"
+	TimeFormat   = "02/Jan/2006:15:04:05Z0700"
 )
 
 func init() {
-	RegisterMiddleware("accesslog", AccesslogRegister)
+	RegisterMiddleware("accesslog", AccessLogRegister)
 }
 
 func InitRequestForLog(request *Request) {
-	request.Context[REQUEST_START] = time.Now().UTC()
+	request.Context[RequestStart] = time.Now().UTC()
 }
 
 func FinishRequestForLog(request *Request, response *Response) {
-	request.Context[REQUEST_START] = time.Now().UTC()
+	request.Context[RequestStart] = time.Now().UTC()
 
 	status := response.Status
 	if status == 0 {
@@ -63,14 +64,14 @@ func FinishRequestForLog(request *Request, response *Response) {
 	if !request.Header.IsHTTP11() {
 		httpVersion = "HTTP1.0'"
 	}
-	start := request.Context[REQUEST_START].(time.Time)
-	accesslog.Infof(
-		"%s [%s] \"%s %s %s\" %d %d %s", ip, time.Now().Format(TIME_FORMAT), method, path, httpVersion,
+	start := request.Context[RequestStart].(time.Time)
+	accessLog.Infof(
+		"%s [%s] \"%s %s %s\" %d %d %s", ip, time.Now().Format(TimeFormat), method, path, httpVersion,
 		status, bodyLen, time.Since(start).String(),
 	)
 }
 
-func AccesslogRegister(handler IHandler) {
+func AccessLogRegister(handler IHandler) {
 	LoadAccessLogger()
 	handler.Initializer().Register(InitRequestForLog)
 	handler.Finalizer().RegisterFinish(FinishRequestForLog)

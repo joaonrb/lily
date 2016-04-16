@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	DEFAULT_PORT       = 5555
-	DEFAULT_HTTPS_PORT = 443
-	DEFAULT_BIND       = "127.0.0.1"
+	defaultPort      = 5555
+	defaultHttpsPort = 443
+	defaultBinding   = "127.0.0.1"
 )
 
 func Run() {
@@ -28,7 +28,7 @@ func Run() {
 
 	port := Configuration.Port
 	if port == 0 {
-		port = DEFAULT_PORT
+		port = defaultPort
 	}
 
 	var httpsPort int
@@ -39,12 +39,12 @@ func Run() {
 		}
 		httpsPort = Configuration.HttpsPort
 		if httpsPort == 0 {
-			httpsPort = DEFAULT_HTTPS_PORT
+			httpsPort = defaultHttpsPort
 		}
 	}
 	bind := Configuration.Bind
 	if bind == "" {
-		bind = DEFAULT_BIND
+		bind = defaultBinding
 	}
 
 	read_timeout := time.Duration(Configuration.ReadTimeout * 10e6)
@@ -52,7 +52,7 @@ func Run() {
 
 	// Register middleware
 	for _, middleware := range Configuration.Middleware {
-		resgistedMiddleware[middleware](mainHandler)
+		middlewares[middleware](mainHandler)
 	}
 
 	for uri, path := range Configuration.StaticFiles {

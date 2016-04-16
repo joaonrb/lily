@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	HTTP_400_MESSAGE = "Bad request"
-	HTTP_404_MESSAGE = "Page not found"
-	HTTP_405_MESSAGE = "Method not allowed"
-	HTTP_500_MESSAGE = "Ups!!! We f*cked up somewhere. Maybe is better this way. This website is boring anyway."
+	HTTP400 = "Bad request"
+	HTTP404 = "Page not found"
+	HTTP405 = "Method not allowed"
+	HTTP500 = "Ups!!! We f*cked up somewhere. Maybe is better this way. This website is boring anyway."
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ type Http400 struct {
 }
 
 func NewHttp400(err string) *Http400 {
-	return &Http400{*NewHttpError(err, http.StatusNotFound, HTTP_400_MESSAGE)}
+	return &Http400{*NewHttpError(err, http.StatusNotFound, HTTP400)}
 }
 
 func RaiseHttp400(err string) {
@@ -61,7 +61,7 @@ type Http404 struct {
 }
 
 func NewHttp404() *Http404 {
-	return &Http404{*NewHttpError(HTTP_404_MESSAGE, http.StatusNotFound, HTTP_404_MESSAGE)}
+	return &Http404{*NewHttpError(HTTP404, http.StatusNotFound, HTTP404)}
 }
 
 func RaiseHttp404() {
@@ -73,7 +73,7 @@ type Http500 struct {
 }
 
 func NewHttp500(err string) *Http500 {
-	return &Http500{*NewHttpError(err, http.StatusInternalServerError, HTTP_500_MESSAGE)}
+	return &Http500{*NewHttpError(err, http.StatusInternalServerError, HTTP500)}
 }
 
 func RaiseHttp500(err string) { panic(NewHttp500(err)) }

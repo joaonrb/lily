@@ -5,10 +5,10 @@
 //
 package lily
 
-var resgistedMiddleware = map[string]func(handler IHandler){}
+var middlewares = map[string]func(handler IHandler){}
 
 func RegisterMiddleware(name string, middleware func(handler IHandler)) {
-	resgistedMiddleware[name] = middleware
+	middlewares[name] = middleware
 }
 
 type RequestMiddleware func(*Request)

@@ -9,7 +9,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-const CONTENT_TYPE = "ContentType"
+const contentType = "ContentType"
 
 type Context map[string]interface{}
 
@@ -43,7 +43,7 @@ func NewRequestInitializer() *RequestInitializer {
 func (self *RequestInitializer) Start(request *fasthttp.RequestCtx) *Request {
 	lilyRequest := &Request{
 		Request: &request.Request,
-		Context: Context{CONTENT_TYPE: "text/html"},
+		Context: Context{contentType: "text/html"},
 		ctx:     request,
 	}
 	for _, middleware := range self.middleware {

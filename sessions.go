@@ -18,16 +18,16 @@ var (
 )
 
 const (
-	DEFAULT_SESSION_COOKIE  = "LILYSESSION"
-	DEFAULT_SESSION_LENGTH  = 10
-	SESSION                 = "session"
-	DEFAULT_SESSION_TIMEOUT = 12 // In hours
+	defaultSessionCookie  = "LILYSESSION"
+	defaultSessionLength  = 10
+	sessionKey            = "session"
+	defaultSessionTimeout = 12 // In hours
 )
 
 var (
-	cookieName    = DEFAULT_SESSION_COOKIE
-	cookieLength  = DEFAULT_SESSION_LENGTH
-	cookieTimeout = DEFAULT_SESSION_TIMEOUT
+	cookieName    = defaultSessionCookie
+	cookieLength  = defaultSessionLength
+	cookieTimeout = defaultSessionTimeout
 )
 
 func init() {
@@ -93,7 +93,7 @@ func (self *session) Load() {
 	}()
 	if self.session == nil {
 		if len(self.Cookie) != 0 {
-			tmp := cacheEngine.Get(fmt.Sprintf("%s_%s", SESSION, self.Cookie))
+			tmp := cacheEngine.Get(fmt.Sprintf("%s_%s", sessionKey, self.Cookie))
 			if tmp != nil {
 				self.session = tmp.(map[string]interface{})
 				return
@@ -114,11 +114,11 @@ func loadSet(self *session, key string, value interface{}) {
 }
 
 func GetSession(request *Request) *session {
-	return request.Context[SESSION].(*session)
+	return request.Context[sessionKey].(*session)
 }
 
 func CheckSession(request *Request) {
-	request.Context[SESSION] = NewSession(string(request.Header.Cookie(cookieName)))
+	request.Context[sessionKey] = NewSession(string(request.Header.Cookie(cookieName)))
 }
 
 func SetSession(request *Request, response *Response) {

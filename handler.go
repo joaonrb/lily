@@ -66,7 +66,7 @@ func (self *Handler) ServeHTTP(context *fasthttp.RequestCtx) {
 			}
 			response.FastHttpResponse = &(context.Response)
 		}
-		context.SetContentType(lilyRequest.Context[CONTENT_TYPE].(string))
+		context.SetContentType(lilyRequest.Context[contentType].(string))
 		self.finish.Finish(lilyRequest, response)
 	}()
 	lilyRequest = self.init.Start(context)
