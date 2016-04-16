@@ -72,6 +72,10 @@ func NewSession(cookie string) *session {
 	}
 }
 
+func SaveSession(cookie string, value interface{}) {
+	cacheEngine.Put(fmt.Sprintf("%s_%s", sessionKey, cookie), value, int64(cookieTimeout*60*60))
+}
+
 func _get(self *session, key string) interface{} {
 	return self.session[key]
 }
@@ -133,7 +137,7 @@ func SetSession(request *Request, response *Response) {
 		}
 		response.Headers["Set-Cookie"] = cookie.String()
 	}
-	go cacheEngine.Put(session.Cookie, session.session, int64(cookieTimeout*60*60))
+	go SaveSession(session.Cookie, session.session)
 }
 
 func Register(handler IHandler) {
