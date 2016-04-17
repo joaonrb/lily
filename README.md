@@ -36,8 +36,8 @@ Then get lily.
 ```
 $ go get github.com/op/go-logging
 $ go get gopkg.in/yaml.v2
-$ go get github.com/go-macaron/cache     # For Caching
-$ go get github.com/valyala/fasthttp     # For the fast stuff
+$ go get github.com/go-macaron/cache  # For Caching
+$ go get github.com/valyala/fasthttp  # For the fast stuff
 $ go get github.com/joaonrb/lily
 ```
 

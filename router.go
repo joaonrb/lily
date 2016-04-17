@@ -84,7 +84,6 @@ type Way struct {
 	Controller IController
 }
 
-// TODO: Do test
 func (self *Router) Parse(path string) (IController, map[string]string, error) {
 	ways := strings.Split(path, "/")
 	thisRoute := self.route
