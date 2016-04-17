@@ -30,6 +30,18 @@ apps:
     type: memory
 `
 
+
+type DummyController struct {
+	Controller
+}
+
+func (self *DummyController) Get(request *Request, args map[string]string) *Response {
+	response := NewResponse()
+	response.Body = "<h1>I'm a dummy</h1>"
+	return response
+}
+
+
 func TestMain(m *testing.M) {
 	defer os.Remove(testSettingsLocation)
 	err := ioutil.WriteFile(testSettingsLocation, []byte(testSettings), 0644)
@@ -44,5 +56,13 @@ func TestMain(m *testing.M) {
 		fmt.Print("Couldn't init configuration because error %s", err.Error())
 	}
 	LoadCache(Configuration)
+
+	controller := &DummyController{}
+
+	RegisterRoute([]Way{
+		{"/", controller},
+		{"/dummy", controller},
+	})
+
 	os.Exit(m.Run())
 }
