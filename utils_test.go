@@ -2,12 +2,35 @@ package lily
 
 import (
 	"testing"
+	"os"
+	"io/ioutil"
+	"fmt"
 )
 //
 // Author João Nuno.
 // 
 // joaonrb@gmail.com
 //
+
+func TestLineIterator(t *testing.T) {
+	tmp := "/tmp/line_iterator.txt"
+	content := "line1\n1\n"
+	//defer os.Remove(tmp)
+	err := ioutil.WriteFile(tmp, []byte(content), 0644)
+	if err != nil {
+		fmt.Print("Tmp file couldn't be writen becauser error %s", err.Error())
+		os.Exit(1)
+	}
+	iter, err := NewLineIterator(tmp)
+	switch {
+	case err != nil: t.Errorf(err.Error())
+	case iter.Next() != "line1" && iter.HasNext(): t.Errorf("Line 1 is not expected(line1).")
+	case iter.Next() != "1" && iter.HasNext(): t.Errorf("Line 2 is not expected(1).")
+	case iter.Next() != "" && !iter.HasNext(): t.Errorf("Line 3 is not expected().")
+	case iter.Next() != "": t.Errorf("Line 4 is not expected at all.")
+	}
+
+}
 
 func TestGenerateBase64StringSize(t *testing.T) {
 	for i, n := range []int{0, 1, 2, 5, 10, 25, 30, 50, 75, 100} {
