@@ -19,21 +19,21 @@ func TestLineIterator(t *testing.T) {
 	//defer os.Remove(tmp)
 	err := ioutil.WriteFile(tmp, []byte(content), 0644)
 	if err != nil {
-		fmt.Print("Tmp file couldn't be writen becauser error %s", err.Error())
+		fmt.Printf("Tmp file couldn't be writen becauser error %s", err.Error())
 		os.Exit(1)
 	}
 	iter, err := NewLineIterator(tmp)
 	switch {
 	case err != nil:
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	case iter.Next() != "line1" && iter.HasNext():
-		t.Errorf("Line 1 is not expected(line1).")
+		t.("Line 1 is not expected(line1).")
 	case iter.Next() != "1" && iter.HasNext():
-		t.Errorf("Line 2 is not expected(1).")
+		t.Error("Line 2 is not expected(1).")
 	case iter.Next() != "" && !iter.HasNext():
-		t.Errorf("Line 3 is not expected().")
+		t.Error("Line 3 is not expected().")
 	case iter.Next() != "":
-		t.Errorf("Line 4 is not expected at all.")
+		t.Error("Line 4 is not expected at all.")
 	}
 
 }
