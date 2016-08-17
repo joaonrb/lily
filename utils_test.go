@@ -1,14 +1,15 @@
 package lily
 
 import (
-	"testing"
-	"os"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"testing"
 )
+
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 
@@ -23,11 +24,16 @@ func TestLineIterator(t *testing.T) {
 	}
 	iter, err := NewLineIterator(tmp)
 	switch {
-	case err != nil: t.Errorf(err.Error())
-	case iter.Next() != "line1" && iter.HasNext(): t.Errorf("Line 1 is not expected(line1).")
-	case iter.Next() != "1" && iter.HasNext(): t.Errorf("Line 2 is not expected(1).")
-	case iter.Next() != "" && !iter.HasNext(): t.Errorf("Line 3 is not expected().")
-	case iter.Next() != "": t.Errorf("Line 4 is not expected at all.")
+	case err != nil:
+		t.Errorf(err.Error())
+	case iter.Next() != "line1" && iter.HasNext():
+		t.Errorf("Line 1 is not expected(line1).")
+	case iter.Next() != "1" && iter.HasNext():
+		t.Errorf("Line 2 is not expected(1).")
+	case iter.Next() != "" && !iter.HasNext():
+		t.Errorf("Line 3 is not expected().")
+	case iter.Next() != "":
+		t.Errorf("Line 4 is not expected at all.")
 	}
 
 }

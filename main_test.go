@@ -30,7 +30,6 @@ apps:
     type: memory
 `
 
-
 type DummyController struct {
 	Controller
 }
@@ -40,7 +39,6 @@ func (self *DummyController) Get(request *Request, args map[string]string) *Resp
 	response.Body = "<h1>I'm a dummy</h1>"
 	return response
 }
-
 
 func TestMain(m *testing.M) {
 	defer os.Remove(testSettingsLocation)

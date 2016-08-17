@@ -8,7 +8,6 @@ package main
 import (
 	"lily"
 	_ "lily/examples/hello"
-	_ "lily/apps/accesslog"
 	"fmt"
 	"os"
 )

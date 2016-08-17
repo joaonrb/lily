@@ -1,15 +1,15 @@
 package lily
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
+
 //
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
-
 
 func TestRouterRoutePath(t *testing.T) {
 	controller, _, err := mainRouter.Parse("/")
