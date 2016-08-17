@@ -6,7 +6,7 @@
 package hello
 
 import (
-	"lily"
+	"github.com/joaonrb/lily"
 )
 
 func init() {

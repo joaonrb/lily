@@ -4,7 +4,7 @@
 package hello
 
 import (
-	"lily"
+	"github.com/joaonrb/lily"
 	"fmt"
 )
 
