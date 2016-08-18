@@ -27,7 +27,7 @@ func TestLineIterator(t *testing.T) {
 	case err != nil:
 		t.Error(err.Error())
 	case iter.Next() != "line1" && iter.HasNext():
-		t.("Line 1 is not expected(line1).")
+		t.Error("Line 1 is not expected(line1).")
 	case iter.Next() != "1" && iter.HasNext():
 		t.Error("Line 2 is not expected(1).")
 	case iter.Next() != "" && !iter.HasNext():
@@ -35,7 +35,6 @@ func TestLineIterator(t *testing.T) {
 	case iter.Next() != "":
 		t.Error("Line 4 is not expected at all.")
 	}
-
 }
 
 func TestGenerateBase64StringSize(t *testing.T) {
