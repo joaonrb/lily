@@ -28,7 +28,7 @@ First get the dependencies:
 
 - [go-logging](https://github.com/op/go-logging)
 - [yalm](https://gopkg.in/yaml.v2)
-- [macaron](https://github.com/go-macaron/cache)   # For cache
+- ~~[macaron](https://github.com/go-macaron/cache)   # For cache~~
 - [fasthttp](https://github.com/valyala/fasthttp)  # Fast and simple web tools
 
 Then get lily.
@@ -36,7 +36,6 @@ Then get lily.
 ```
 $ go get github.com/op/go-logging
 $ go get gopkg.in/yaml.v2
-$ go get github.com/go-macaron/cache  # For Caching
 $ go get github.com/valyala/fasthttp  # For the fast stuff
 $ go get github.com/joaonrb/lily
 ```
