@@ -53,7 +53,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		fmt.Printf("Couldn't init configuration because error %s", err.Error())
 	}
-	LoadCache(Configuration)
 
 	controller := &DummyController{}
 
