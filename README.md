@@ -21,8 +21,8 @@ I also give it a try to a simple, funcional and, most important, readable routin
 
 Installation
 ------------
-To install Lily, make sure you have installed [Go 1.5](https://storage.googleapis.com/golang/go1.6.src.tar.gz) or later
-version correctly.
+To install Lily, make sure you have installed [Go 1.5](https://storage.googleapis.com/golang/go1.5.src.tar.gz) or [later
+version](https://storage.googleapis.com/golang/go1.7.src.tar.gz) correctly.
 
 First get the dependencies:
 
