@@ -21,14 +21,14 @@ I also give it a try to a simple, funcional and, most important, readable routin
 
 Installation
 ------------
-To install Lily, make sure you have installed [Go 1.5](https://storage.googleapis.com/golang/go1.6.src.tar.gz) or later
-version correctly.
+To install Lily, make sure you have installed [Go 1.5](https://storage.googleapis.com/golang/go1.5.src.tar.gz) or [later
+version](https://storage.googleapis.com/golang/go1.7.src.tar.gz) correctly.
 
 First get the dependencies:
 
 - [go-logging](https://github.com/op/go-logging)
 - [yalm](https://gopkg.in/yaml.v2)
-- [macaron](https://github.com/go-macaron/cache)   # For cache
+- ~~[macaron](https://github.com/go-macaron/cache)   # For cache~~
 - [fasthttp](https://github.com/valyala/fasthttp)  # Fast and simple web tools
 
 Then get lily.
@@ -36,7 +36,6 @@ Then get lily.
 ```
 $ go get github.com/op/go-logging
 $ go get gopkg.in/yaml.v2
-$ go get github.com/go-macaron/cache  # For Caching
 $ go get github.com/valyala/fasthttp  # For the fast stuff
 $ go get github.com/joaonrb/lily
 ```

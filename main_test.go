@@ -44,16 +44,15 @@ func TestMain(m *testing.M) {
 	defer os.Remove(testSettingsLocation)
 	err := ioutil.WriteFile(testSettingsLocation, []byte(testSettings), 0644)
 	if err != nil {
-		fmt.Print("Tmp file couldn't be writen becauser error %s", err.Error())
+		fmt.Printf("Tmp file couldn't be writen becauser error %s", err.Error())
 		os.Exit(1)
 	}
 
 	// Starting test
 	err = Init(testSettingsLocation)
 	if err != nil {
-		fmt.Print("Couldn't init configuration because error %s", err.Error())
+		fmt.Printf("Couldn't init configuration because error %s", err.Error())
 	}
-	LoadCache(Configuration)
 
 	controller := &DummyController{}
 

@@ -17,6 +17,6 @@ func TestRouterRoutePath(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	if reflect.TypeOf(controller) != reflect.TypeOf(&DummyController{}) {
-		t.Errorf("Contoller is not dummy")
+		t.Error("Contoller is not dummy")
 	}
 }
