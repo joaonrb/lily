@@ -16,6 +16,6 @@ func core(ctx *fasthttp.RequestCtx) {
 			ctx.Response.SetStatusCode(status, fasthttp.StatusMessage(status))
 		}
 	}()
-	controller := getController(ctx.Path())
-	controller.Handle(controller, ctx)
+	controller, args := getController(ctx.Path())
+	controller.Handle(controller, ctx, args)
 }
