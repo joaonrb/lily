@@ -11,33 +11,27 @@ package lily
 
 import (
 	"regexp"
+    "strings"
 )
 
 var (
-	urls = map[string]route{}
+	urls = &route{}
 )
 
 type route struct {
-	next       route
+	next       *route
 	paths      map[string]IController
 	regex      *regexp.Regexp
 	controller IController
 }
 
 func getController(uri string) (IController, map[string]string) {
-	var (
-		parts  []string
-		way    *route
-	    exist  bool
-		params map[string]string
-	)
-	parts = uri.Split("/")
-	way, exist = urls[parts[0]]
-	if !exist {
-		return
-	}
-	for part := range parts[1:] {
-		if _, exist = way.paths[part]; !exist {
+	if uri[0] == "/" { uri = uri[1:] }
+	if uri[len(uri)-1] == "/" { uri = uri[:len(uri)-1] }
+	params := map[string]string{}
+	way := urls
+	for part := range strings.Split(uri, "/") {
+		if _, exist := way.paths[part]; !exist {
 			match := way.regex.FindStringSubmatch(part)
 			if len(match) > 0 {
 				params[way.regex.SubexpNames()[1]] = match[0]
@@ -53,4 +47,31 @@ func getController(uri string) (IController, map[string]string) {
 		return way.controller, params
 	}
 	return
+}
+
+func Url(uri string, controller IController) error {
+	if uri[0] == "/" { uri = uri[1:] }
+	if uri[len(uri)-1] == "/" { uri = uri[:len(uri)-1] }
+	way := urls
+	parts := strings.Split(uri, "/")
+	var err error
+	for part := range parts {
+		if part[0] == ":" {
+			way.regex, err = regexp.Compile(part[1:])
+			if err != nil {
+				return err
+			}
+			if way.next == nil {
+				way.next = &route{}
+			}
+			way = way.next
+		} else {
+			if _, exist := way.paths[part]; !exist {
+				way.paths[part] = &route{}
+			}
+			way = way.paths[part]
+		}
+	}
+	way.controller = controller
+	return nil
 }
