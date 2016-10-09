@@ -1,0 +1,16 @@
+package: github.com/joaonrb/lilly
+homepage: https://joaonrb.ninja/lilly
+license: MIT
+owners:
+- name: João Nuno
+  email: joaonrb@gmail.com
+  homepage: httpa://joaonrb.ninja/
+- package: github.com/valyala/fasthttp
+  version: ^20160617.0.0
+- package: github.com/op/go-logging
+  version: ^1.0.0
+- package: gopkg.in/yaml.v2
+- package: github.com/gorilla/securecookie
+  version: ^1.1.0
+- package: github.com/gorilla/context
+  version: ^1.1.0

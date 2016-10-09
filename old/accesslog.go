@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"errors"
 )
 
 var accessLog *logging.Logger
@@ -18,7 +19,7 @@ var accessLog *logging.Logger
 func LoadAccessLogger() {
 	settings := Configuration
 	if settings.AccessLog.Type == "" {
-		panic(fmt.Errorf("Trying to use accesslog middleware without configure the path for it"))
+		panic(errors.New("Trying to use accesslog middleware without configure the path for it"))
 	}
 	accessLog = logging.MustGetLogger("accesslog")
 	var out io.Writer
