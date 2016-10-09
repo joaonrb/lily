@@ -85,7 +85,7 @@ func Run() {
 		}
 	}()
 	fmt.Printf("# Listening at %s\n", address)
-	fmt.Printf("# Use Ctrl+C to close \n")
+	fmt.Print("# Use Ctrl+C to close \n")
 
 	waitForFinish()
 }
@@ -96,7 +96,7 @@ func waitForFinish() {
 	cleanupDone := make(chan bool)
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
-		for _ = range signalChan {
+		for range signalChan {
 			fmt.Println("\n# Server closing...\n")
 			cleanupDone <- true
 		}
