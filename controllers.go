@@ -7,6 +7,7 @@ package lily
 
 import (
 	"github.com/valyala/fasthttp"
+	"bytes"
 	"strings"
 )
 
@@ -64,7 +65,7 @@ func (self *BaseController) Handle(controller IController, ctx *fasthttp.Request
 		controller.Finish(response)
 		sendResponse(ctx, response)
 	}()
-	switch strings.ToUpper(ctx.Method()) {
+	switch string(bytes.ToUpper(ctx.Method())) {
 	case "GET":
 		response = controller.Get(ctx, args)
 	case "POST":
