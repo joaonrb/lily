@@ -57,7 +57,7 @@ func Url(uri string, controller IController) error {
 	parts := strings.Split(uri, "/")
 	var err error
 	for _, part := range parts {
-		if part[0] == ':' {
+		if len(part) > 0 && part[0] == ':' {
 			way.regex, err = regexp.Compile(part[1:])
 			if err != nil {
 				return err
