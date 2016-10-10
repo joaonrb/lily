@@ -21,7 +21,7 @@ var (
 
 type route struct {
 	next       *route
-	paths      map[string]IController
+	paths      map[string]*route
 	regex      *regexp.Regexp
 	controller IController
 }
@@ -41,7 +41,7 @@ func getController(uri []byte) (IController, map[string]string) {
 				return nil, nil
 			}
 		} else {
-			way = way.paths[part]
+			way = way.paths[string(part)]
 		}
 	}
 	if way != nil {
@@ -56,19 +56,19 @@ func Url(uri string, controller IController) error {
 	way := urls
 	parts := strings.Split(uri, "/")
 	var err error
-	for part := range parts {
+	for _, part := range parts {
 		if part[0] == ':' {
 			way.regex, err = regexp.Compile(part[1:])
 			if err != nil {
 				return err
 			}
 			if way.next == nil {
-				way.next = &route{}
+				way.next = &route{paths: map[string]*route{}}
 			}
 			way = way.next
 		} else {
 			if _, exist := way.paths[part]; !exist {
-				way.paths[part] = &route{}
+				way.paths[part] = &route{paths: map[string]*route{}}
 			}
 			way = way.paths[part]
 		}
