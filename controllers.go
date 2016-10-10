@@ -8,7 +8,6 @@ package lily
 import (
 	"github.com/valyala/fasthttp"
 	"bytes"
-	"strings"
 )
 
 type Response struct {

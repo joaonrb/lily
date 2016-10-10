@@ -12,6 +12,7 @@ package lily
 import (
 	"regexp"
     "strings"
+	"bytes"
 )
 
 var (
@@ -25,16 +26,16 @@ type route struct {
 	controller IController
 }
 
-func getController(uri string) (IController, map[string]string) {
-	if uri[0] == "/" { uri = uri[1:] }
-	if uri[len(uri)-1] == "/" { uri = uri[:len(uri)-1] }
+func getController(uri []byte) (IController, map[string]string) {
+	if uri[0] == '/' { uri = uri[1:] }
+	if uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
 	params := map[string]string{}
 	way := urls
-	for part := range strings.Split(uri, "/") {
-		if _, exist := way.paths[part]; !exist {
-			match := way.regex.FindStringSubmatch(part)
+	for part := range bytes.Split(uri, '/') {
+		if _, exist := way.paths[string(part)]; !exist {
+			match := way.regex.FindSubmatch(part)
 			if len(match) > 0 {
-				params[way.regex.SubexpNames()[1]] = match[0]
+				params[way.regex.SubexpNames()[1]] = string(match[0])
 				way = way.next
 			} else {
 				return
