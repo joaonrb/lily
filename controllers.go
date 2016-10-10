@@ -16,29 +16,19 @@ type Response struct {
 	Body             string
 }
 
-func HttpError(status int) *Response {
-	return &Response{Status: status, Body: fasthttp.StatusMessage(status)}
-}
+var (
+	HttpError = func(status int) *Response { return &Response{Status: status, Body: fasthttp.StatusMessage(status)} }
+	http400   = HttpError(fasthttp.StatusBadRequest)
+	http404   = HttpError(fasthttp.StatusNotFound)
+	http405   = HttpError(fasthttp.StatusMethodNotAllowed)
+	http500   = HttpError(fasthttp.StatusInternalServerError)
+	Http400   = func() *Response { return http400 }
+	Http404   = func() *Response { return http404 }
+	Http405   = func() *Response { return http405 }
+	Http500   = func() *Response { return http500}
+)
 
-
-type IController interface {
-	Handle(IController, *fasthttp.RequestCtx, map[string]string)
-	PrepareResponse(IController, *fasthttp.RequestCtx, map[string]string) *Response
-	Get(*fasthttp.RequestCtx, map[string]string) *Response
-	Head(*fasthttp.RequestCtx, map[string]string) *Response
-	Post(*fasthttp.RequestCtx, map[string]string) *Response
-	Put(*fasthttp.RequestCtx, map[string]string) *Response
-	Delete(*fasthttp.RequestCtx, map[string]string) *Response
-	Trace(*fasthttp.RequestCtx, map[string]string) *Response
-	Http400() *Response
-	Http404() *Response
-	Http500() *Response
-}
-
-type BaseController struct {}
-
-func (self *BaseController) Handle(controller IController, ctx *fasthttp.RequestCtx, args map[string]string) {
-	response := self.PrepareResponse(controller, ctx, args)
+func sendResponse(ctx *fasthttp.RequestCtx, response *Response) {
 	ctx.SetStatusCode(response.Status)
 	for header, value := range response.Headers {
 		ctx.Response.Header.Add(header, value)
@@ -46,9 +36,34 @@ func (self *BaseController) Handle(controller IController, ctx *fasthttp.Request
 	ctx.SetBodyString(response.Body)
 }
 
-func (self *BaseController) PrepareResponse(controller IController, ctx *fasthttp.RequestCtx,
-                                            args map[string]string) *Response {
+
+type IController interface {
+	Handle(IController, *fasthttp.RequestCtx, map[string]string)
+	Start(*fasthttp.RequestCtx, map[string]string)
+	Finish(*Response)
+	Get(*fasthttp.RequestCtx, map[string]string) *Response
+	Head(*fasthttp.RequestCtx, map[string]string) *Response
+	Post(*fasthttp.RequestCtx, map[string]string) *Response
+	Put(*fasthttp.RequestCtx, map[string]string) *Response
+	Patch(*fasthttp.RequestCtx, map[string]string) *Response
+	Delete(*fasthttp.RequestCtx, map[string]string) *Response
+	Trace(*fasthttp.RequestCtx, map[string]string) *Response
+}
+
+type BaseController struct {}
+
+// Only touch Handle method if you understand what you are doing.
+func (self *BaseController) Handle(controller IController, ctx *fasthttp.RequestCtx, args map[string]string) {
+	controller.Start(ctx, args)
 	var response *Response
+	defer func() {
+		if recovery := recover(); recovery != nil {
+			Error("Unexpected error on call %s %s: %v", ctx.Method(), ctx.Path(), recovery)
+			response = Http500()
+		}
+		controller.Finish(response)
+		sendResponse(ctx, response)
+	}()
 	switch strings.ToUpper(ctx.Method()) {
 	case "GET":
 		response = controller.Get(ctx, args)
@@ -56,6 +71,8 @@ func (self *BaseController) PrepareResponse(controller IController, ctx *fasthtt
 		response = controller.Post(ctx, args)
 	case "PUT":
 		response = controller.Put(ctx, args)
+	case "PATCH":
+		response = controller.Patch(ctx, args)
 	case "DELETE":
 		response = controller.Delete(ctx, args)
 	case "HEAD":
@@ -63,44 +80,39 @@ func (self *BaseController) PrepareResponse(controller IController, ctx *fasthtt
 	case "TRACE":
 		response = controller.Trace(ctx, args)
 	default:
-		response = HttpError(fasthttp.StatusMethodNotAllowed)
+		response = Http405()
 	}
-	return response
 }
 
+func (self *BaseController) Start(*fasthttp.RequestCtx, map[string]string) {}
+
+func (self *BaseController) Finish(*Response) {}
+
 func (self *BaseController) Get(request *fasthttp.Request, args map[string]string) *Response {
-	return HttpError(fasthttp.StatusMethodNotAllowed)
+	return Http405()
 }
 
 func (self *BaseController) Head(request *fasthttp.Request, args map[string]string) *Response {
-	return HttpError(fasthttp.StatusMethodNotAllowed)
+	return Http405()
 }
 
 func (self *BaseController) Post(request *fasthttp.Request, args map[string]string) *Response {
-	return HttpError(fasthttp.StatusMethodNotAllowed)
+	return Http405()
 }
 
 func (self *BaseController) Put(request *fasthttp.Request, args map[string]string) *Response {
-	return HttpError(fasthttp.StatusMethodNotAllowed)
+	return Http405()
+}
+
+func (self *BaseController) Patch(request *fasthttp.Request, args map[string]string) *Response {
+	return Http405()
 }
 
 func (self *BaseController) Delete(request *fasthttp.Request, args map[string]string) *Response {
-	return HttpError(fasthttp.StatusMethodNotAllowed)
+	return Http405()
 }
 
 func (self *BaseController) Trace(request *fasthttp.Request, args map[string]string) *Response {
-	return HttpError(fasthttp.StatusMethodNotAllowed)
-}
-
-func (self *BaseController) Http400() *Response {
-	return HttpError(fasthttp.StatusBadRequest)
-}
-
-func (self *BaseController) Http404() *Response {
-	return HttpError(fasthttp.StatusNotFound)
-}
-
-func (self *BaseController) Http500() *Response {
-	return HttpError(fasthttp.StatusInternalServerError)
+	return Http405()
 }
 

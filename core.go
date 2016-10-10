@@ -10,12 +10,11 @@ import (
 )
 
 func core(ctx *fasthttp.RequestCtx) {
-	defer func() {
-		if recovery := recover(); recovery != nil {
-			status := fasthttp.StatusInternalServerError
-			ctx.Response.SetStatusCode(status, fasthttp.StatusMessage(status))
-		}
-	}()
 	controller, args := getController(ctx.Path())
-	controller.Handle(controller, ctx, args)
+	if controller == nil {
+		response := Http404()
+		sendResponse(ctx, response)
+	} else {
+		controller.Handle(controller, ctx, args)
+	}
 }
