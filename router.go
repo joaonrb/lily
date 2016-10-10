@@ -28,7 +28,7 @@ type route struct {
 
 func getController(uri []byte) (IController, map[string]string) {
 	if uri[0] == '/' { uri = uri[1:] }
-	if uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
+	if len(uri) > 0 && uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
 	params := map[string]string{}
 	way := urls
 	for _, part := range bytes.Split(uri, []byte{'/'}) {
@@ -52,7 +52,7 @@ func getController(uri []byte) (IController, map[string]string) {
 
 func Url(uri string, controller IController) error {
 	if uri[0] == '/' { uri = uri[1:] }
-	if uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
+	if len(uri) > 0 && uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
 	way := urls
 	parts := strings.Split(uri, "/")
 	var err error
