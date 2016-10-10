@@ -16,6 +16,10 @@ type Response struct {
 	Body             string
 }
 
+func NewResponse() *Response {
+	return &Response{Status: fasthttp.StatusOK}
+}
+
 var (
 	HttpError = func(status int) *Response { return &Response{Status: status, Body: fasthttp.StatusMessage(status)} }
 	http400   = HttpError(fasthttp.StatusBadRequest)
