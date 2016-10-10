@@ -31,14 +31,14 @@ func getController(uri []byte) (IController, map[string]string) {
 	if uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
 	params := map[string]string{}
 	way := urls
-	for part := range bytes.Split(uri, '/') {
+	for _, part := range bytes.Split(uri, []byte{'/'}) {
 		if _, exist := way.paths[string(part)]; !exist {
 			match := way.regex.FindSubmatch(part)
 			if len(match) > 0 {
 				params[way.regex.SubexpNames()[1]] = string(match[0])
 				way = way.next
 			} else {
-				return
+				return nil, nil
 			}
 		} else {
 			way = way.paths[part]
@@ -47,17 +47,17 @@ func getController(uri []byte) (IController, map[string]string) {
 	if way != nil {
 		return way.controller, params
 	}
-	return
+	return nil, nil
 }
 
 func Url(uri string, controller IController) error {
-	if uri[0] == "/" { uri = uri[1:] }
-	if uri[len(uri)-1] == "/" { uri = uri[:len(uri)-1] }
+	if uri[0] == '/' { uri = uri[1:] }
+	if uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
 	way := urls
 	parts := strings.Split(uri, "/")
 	var err error
 	for part := range parts {
-		if part[0] == ":" {
+		if part[0] == ':' {
 			way.regex, err = regexp.Compile(part[1:])
 			if err != nil {
 				return err
