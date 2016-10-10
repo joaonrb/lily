@@ -92,31 +92,31 @@ func (self *BaseController) Start(*fasthttp.RequestCtx, map[string]string) {}
 
 func (self *BaseController) Finish(*Response) {}
 
-func (self *BaseController) Get(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Head(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Head(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Post(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Put(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Put(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Patch(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Patch(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Delete(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Trace(request *fasthttp.Request, args map[string]string) *Response {
+func (self *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
