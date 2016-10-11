@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 	controller := &DummyController{}
 
 	Url("/", controller)
-	Url("/:(?P<parameter>w+)", controller)
+	Url("/:(?P<name>\\w+)", controller)
 
 	os.Exit(m.Run())
 }

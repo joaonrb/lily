@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	urls = &route{}
+	urls = &route{paths: map[string]*route{}}
 )
 
 type route struct {
