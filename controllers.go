@@ -29,7 +29,7 @@ var (
 	Http400   = func() *Response { return http400 }
 	Http404   = func() *Response { return http404 }
 	Http405   = func() *Response { return http405 }
-	Http500   = func() *Response { return http500}
+	Http500   = func() *Response { return http500 }
 )
 
 func sendResponse(ctx *fasthttp.RequestCtx, response *Response) {
@@ -42,8 +42,9 @@ func sendResponse(ctx *fasthttp.RequestCtx, response *Response) {
 
 
 type IController interface {
-	Handle(IController, *fasthttp.RequestCtx, map[string]string)
-	Start(*fasthttp.RequestCtx, map[string]string)
+	Init(IController)
+	Handle(*fasthttp.RequestCtx, map[string]string)
+	Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response)
 	Finish(*Response)
 	Get(*fasthttp.RequestCtx, map[string]string) *Response
 	Head(*fasthttp.RequestCtx, map[string]string) *Response
@@ -54,41 +55,51 @@ type IController interface {
 	Trace(*fasthttp.RequestCtx, map[string]string) *Response
 }
 
-type BaseController struct {}
+type BaseController struct {
+	This  IController
+}
+
+func (self *BaseController) Init(controller IController)  {
+	self.This = controller
+}
 
 // Only touch Handle method if you understand what you are doing.
-func (self *BaseController) Handle(controller IController, ctx *fasthttp.RequestCtx, args map[string]string) {
-	controller.Start(ctx, args)
-	var response *Response
+func (self *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string) {
+	ok, response := self.This.Start(ctx, args)
 	defer func() {
 		if recovery := recover(); recovery != nil {
 			Error("Unexpected error on call %s %s: %v", ctx.Method(), ctx.Path(), recovery)
 			response = Http500()
 		}
-		controller.Finish(response)
+		self.This.Finish(response)
 		sendResponse(ctx, response)
 	}()
+	if !ok {
+		return
+	}
 	switch string(bytes.ToUpper(ctx.Method())) {
 	case "GET":
-		response = controller.Get(ctx, args)
+		response = self.This.Get(ctx, args)
 	case "POST":
-		response = controller.Post(ctx, args)
+		response = self.This.Post(ctx, args)
 	case "PUT":
-		response = controller.Put(ctx, args)
+		response = self.This.Put(ctx, args)
 	case "PATCH":
-		response = controller.Patch(ctx, args)
+		response = self.This.Patch(ctx, args)
 	case "DELETE":
-		response = controller.Delete(ctx, args)
+		response = self.This.Delete(ctx, args)
 	case "HEAD":
-		response = controller.Head(ctx, args)
+		response = self.This.Head(ctx, args)
 	case "TRACE":
-		response = controller.Trace(ctx, args)
+		response = self.This.Trace(ctx, args)
 	default:
 		response = Http405()
 	}
 }
 
-func (self *BaseController) Start(*fasthttp.RequestCtx, map[string]string) {}
+func (self *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response) {
+	return true, nil
+}
 
 func (self *BaseController) Finish(*Response) {}
 

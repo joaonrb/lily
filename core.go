@@ -15,6 +15,6 @@ func core(ctx *fasthttp.RequestCtx) {
 		response := Http404()
 		sendResponse(ctx, response)
 	} else {
-		controller.Handle(controller, ctx, args)
+		controller.Handle(ctx, args)
 	}
 }

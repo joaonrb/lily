@@ -30,7 +30,8 @@ func (self *DummyController) Get(request *fasthttp.RequestCtx, args map[string]s
 
 func TestMain(m *testing.M) {
 
-	controller := &DummyController{}
+	var controller IController = &DummyController{}
+	controller.Init(controller)
 
 	Url("/", controller)
 	Url("/:(?P<name>\\w+)", controller)
