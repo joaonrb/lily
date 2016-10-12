@@ -30,11 +30,13 @@ func (self *DummyController) Get(request *fasthttp.RequestCtx, args map[string]s
 
 func TestMain(m *testing.M) {
 
-	var controller IController = &DummyController{}
-	controller.Init(controller)
+	var (
+		controller IController = &DummyController{}
+		base       IController = &BaseController{}
+	)
 
 	Url("/", controller)
 	Url("/:(?P<name>\\w+)", controller)
-
+	Url("/base", base)
 	os.Exit(m.Run())
 }

@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"os"
 	"time"
+	"github.com/valyala/fasthttp"
 )
 
 // File iterator line by line
@@ -90,4 +91,16 @@ func GenerateBase64Bytes(n int) []byte {
 
 func GenerateBase64String(n int) string {
 	return string(GenerateBase64Bytes(n))
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+func MockRequest(method, path string) *fasthttp.RequestCtx {
+	controller, args := getController([]byte(path))
+	r := fasthttp.RequestHeader{}
+	r.SetMethod(method)
+	ctx := &fasthttp.RequestCtx{Request: fasthttp.Request{Header: r}}
+	controller.Handle(ctx, args)
+	return ctx
 }
