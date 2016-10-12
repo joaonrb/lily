@@ -1,10 +1,9 @@
-package lily
-
 //
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
+package lily
 
 import (
 	"fmt"
@@ -81,15 +80,15 @@ func Debug(message string, args ...interface{}) {
 	log.Debugf(message, args...)
 }
 
-func LoadLogger() {
+func LoadLogger(loggers []SLogger) {
 	var out io.Writer
-	loggers := make([]logging.Backend, 0)
-	for _, loggerSettings := range Configuration.Loggers {
+	goLoggers := make([]logging.Backend, 0)
+	for _, loggerSettings := range loggers {
 		switch loggerSettings.Type {
 		case CONSOLE:
 			out = os.Stdout
 		case FILE:
-			out = OpenRotatorFile(loggerSettings.Path)
+			out = OpenRotatoryWriter(loggerSettings.Path)
 		}
 		logger := logging.NewLogBackend(out, "", 0)
 		beFormatter := logging.NewBackendFormatter(logger, logging.MustStringFormatter(loggerSettings.Layout))
@@ -99,9 +98,9 @@ func LoadLogger() {
 		lowerCaseLevel := strings.ToLower(loggerSettings.Level)
 		levelNumber := LOGGING_LEVELS[lowerCaseLevel]
 		beLevel.SetLevel(levelNumber, "")
-		loggers = append(loggers, beLevel)
+		goLoggers = append(goLoggers, beLevel)
 	}
-	log.SetBackend(logging.MultiLogger(loggers...))
+	log.SetBackend(logging.MultiLogger(goLoggers...))
 }
 
 type RotatoryWriter struct {
@@ -110,7 +109,7 @@ type RotatoryWriter struct {
 	filePath   string
 }
 
-func OpenRotatorFile(path string) io.Writer {
+func OpenRotatoryWriter(path string) io.Writer {
 	out, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 	if err != nil {
 		panic(
@@ -119,17 +118,17 @@ func OpenRotatorFile(path string) io.Writer {
 			),
 		)
 	}
-	rotator := &RotatoryWriter{doRotation: false, file: out, filePath: path}
+	rotatoryWriter := &RotatoryWriter{doRotation: false, file: out, filePath: path}
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGUSR1)
 	go func(rot *RotatoryWriter) {
 		for {
 			<-c
-			rotator.doRotation = true
+			rotatoryWriter.doRotation = true
 			Info("Rotate order caught for file '%s'", path)
 		}
-	}(rotator)
-	return rotator
+	}(rotatoryWriter)
+	return rotatoryWriter
 }
 
 func (self *RotatoryWriter) Write(p []byte) (n int, err error) {

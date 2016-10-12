@@ -1,151 +1,79 @@
-package lily
-
 //
 // Author João Nuno.
+// 
+// joaonrb@gmail.com
 //
 // Default router for Lily. Load the router in main app. Router must implement IRouter.
 // Package router loads a string in format:
 // "/path1/path2/:(?P<parameter>\d+)" ExampleController
 //
+package lily
 
 import (
 	"regexp"
-	"strings"
+    "strings"
+	"bytes"
 )
 
-var mainRouter IRouter
+var (
+	urls = &route{paths: map[string]*route{}}
+)
 
-// Register a new router
-func ForceRegisterRouter(router IRouter) {
-	mainRouter = router
+type route struct {
+	next       *route
+	paths      map[string]*route
+	regex      *regexp.Regexp
+	controller IController
 }
 
-// Try to register a new router if no router is register already.
-// @return: true if new router was successful registered and false otherwise.
-func RegisterRouter(router IRouter) bool {
-	if mainRouter == nil {
-		ForceRegisterRouter(router)
-		return true
-	}
-	return false
-}
-
-// Register a path to the router. If no router was resisted it creates a new router.
-func RegisterPath(path string, controller IController) error {
-	// Creates a new router if none exist.
-	RegisterRouter(&Router{newRouterNode()})
-	return mainRouter.Register(path, controller)
-}
-
-// Register a bulk of controllers
-func RegisterRoute(paths []Way) error {
-	// Creates a new router if none exist.
-	RegisterRouter(&Router{newRouterNode()})
-
-	for _, way := range paths {
-		err := mainRouter.Register(way.Path, way.Controller)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-type IRouter interface {
-	Parse(string) (IController, map[string]string, error)
-	Register(string, IController) error
-}
-
-// Router node
-// It holds the possible flat routes and after that the regex routes.
-type routerNode struct {
-	flatRoutes  map[string]*routerNode
-	regexRoutes map[string]*regexNode
-	controller  IController
-}
-
-func newRouterNode() *routerNode {
-	return &routerNode{map[string]*routerNode{}, map[string]*regexNode{}, nil}
-}
-
-type regexNode struct {
-	*routerNode
-	regex *regexp.Regexp
-}
-
-// Simple router
-// Search for the flat routes first and the regex after. At the end returns the controller.
-type Router struct {
-	route *routerNode
-}
-
-type Way struct {
-	Path       string
-	Controller IController
-}
-
-func (self *Router) Parse(path string) (IController, map[string]string, error) {
-	ways := strings.Split(path, "/")
-	thisRoute := self.route
+func getController(uri []byte) (IController, map[string]string) {
+	if uri[0] == '/' { uri = uri[1:] }
+	if len(uri) > 0 && uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
 	params := map[string]string{}
-	for _, way := range ways {
-		if way == "" {
-			continue
-		}
-		if newRoute, ok := thisRoute.flatRoutes[way]; ok {
-			thisRoute = newRoute
+	way := urls
+	for _, part := range bytes.Split(uri, []byte{'/'}) {
+		if _, exist := way.paths[string(part)]; !exist {
+			match := way.regex.FindSubmatch(part)
+			if len(match) > 0 {
+				params[way.regex.SubexpNames()[1]] = string(match[0])
+				way = way.next
+			} else {
+				return nil, nil
+			}
 		} else {
-			found := false
-			for _, regexRoute := range thisRoute.regexRoutes {
-				match := regexRoute.regex.FindStringSubmatch(way)
-				if len(match) > 0 {
-					params[regexRoute.regex.SubexpNames()[1]] = match[0]
-					thisRoute = regexRoute.routerNode
-					found = true
-					break
-				}
-			}
-			if !found {
-				return nil, nil, NewHttp404()
-			}
+			way = way.paths[string(part)]
 		}
 	}
-	return thisRoute.controller, params, nil
+	if way != nil {
+		return way.controller, params
+	}
+	return nil, nil
 }
 
-func (self *Router) Register(path string, controller IController) error {
-	ways := strings.Split(path, "/")
-	thisRoute := self.route
-
-	for _, way := range ways {
-		switch {
-		case len(way) == 0:
-		case ':' == way[0]:
-			regexString := way[1:]
-			if regexRouter, ok := thisRoute.regexRoutes[regexString]; ok {
-				thisRoute = regexRouter.routerNode
-			} else {
-				regex, err := regexp.Compile(regexString)
-				if err != nil {
-					return err
-				}
-				thisRoute.regexRoutes[regexString] = &regexNode{newRouterNode(), regex}
-				thisRoute = thisRoute.regexRoutes[regexString].routerNode
+func Url(uri string, controller IController) error {
+	controller.Init(controller)
+	if uri[0] == '/' { uri = uri[1:] }
+	if len(uri) > 0 && uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
+	way := urls
+	parts := strings.Split(uri, "/")
+	var err error
+	for _, part := range parts {
+		if len(part) > 0 && part[0] == ':' {
+			way.regex, err = regexp.Compile(part[1:])
+			if err != nil {
+				return err
 			}
-		default:
-			if router, ok := thisRoute.flatRoutes[way]; ok {
-				thisRoute = router
-			} else {
-				thisRoute.flatRoutes[way] = newRouterNode()
-				thisRoute = thisRoute.flatRoutes[way]
+			if way.next == nil {
+				way.next = &route{paths: map[string]*route{}}
 			}
+			way = way.next
+		} else {
+			if _, exist := way.paths[part]; !exist {
+				way.paths[part] = &route{paths: map[string]*route{}}
+			}
+			way = way.paths[part]
 		}
 	}
-	switch {
-	case thisRoute.controller != nil:
-		return NewPathAlreadyExist(path)
-	default:
-		thisRoute.controller = controller
-	}
+	way.controller = controller
 	return nil
 }
