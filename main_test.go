@@ -1,10 +1,9 @@
-package lily
-
-//
+// Package lily
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
+package lily
 
 import (
 	"os"

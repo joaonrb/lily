@@ -1,3 +1,8 @@
+// Package lily
+// Author João Nuno.
+//
+// joaonrb@gmail.com
+//
 package lily
 
 import (
@@ -7,11 +12,6 @@ import (
 	"testing"
 )
 
-//
-// Author João Nuno.
-//
-// joaonrb@gmail.com
-//
 
 func TestLineIterator(t *testing.T) {
 	tmp := "/tmp/line_iterator.txt"

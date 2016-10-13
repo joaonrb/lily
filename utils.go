@@ -1,4 +1,4 @@
-//
+// Package lily
 // Author João Nuno.
 //
 // joaonrb@gmail.com
@@ -45,20 +45,20 @@ func readLine(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 
-func (self *lineIterator) Next() string {
-	line, err := readLine(self.buffer)
+func (iter *lineIterator) Next() string {
+	line, err := readLine(iter.buffer)
 	if err == io.EOF {
-		self.hasNext = false
+		iter.hasNext = false
 	}
 	return line
 }
 
-func (self *lineIterator) HasNext() bool {
-	return self.hasNext
+func (iter *lineIterator) HasNext() bool {
+	return iter.hasNext
 }
 
-func (self *lineIterator) Close() {
-	self.file.Close()
+func (iter *lineIterator) Close() {
+	iter.file.Close()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

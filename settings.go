@@ -1,10 +1,9 @@
-//
+// Package lily
 // Author João Nuno.
 // 
 // joaonrb@gmail.com
 //
 package lily
-
 
 
 type SLogger struct {

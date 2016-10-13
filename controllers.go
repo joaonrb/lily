@@ -1,4 +1,4 @@
-//
+// Package lily
 // Author João Nuno.
 // 
 // joaonrb@gmail.com
@@ -59,19 +59,19 @@ type BaseController struct {
 	This  IController
 }
 
-func (self *BaseController) Init(controller IController)  {
-	self.This = controller
+func (c *BaseController) Init(controller IController)  {
+	c.This = controller
 }
 
 // Only touch Handle method if you understand what you are doing.
-func (self *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string) {
-	ok, response := self.This.Start(ctx, args)
+func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string) {
+	ok, response := c.This.Start(ctx, args)
 	defer func() {
 		if recovery := recover(); recovery != nil {
 			Error("Unexpected error on call %s %s: %v", ctx.Method(), ctx.Path(), recovery)
 			response = Http500()
 		}
-		self.This.Finish(response)
+		c.This.Finish(response)
 		sendResponse(ctx, response)
 	}()
 	if !ok {
@@ -79,55 +79,55 @@ func (self *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]str
 	}
 	switch string(bytes.ToUpper(ctx.Method())) {
 	case "GET":
-		response = self.This.Get(ctx, args)
+		response = c.This.Get(ctx, args)
 	case "POST":
-		response = self.This.Post(ctx, args)
+		response = c.This.Post(ctx, args)
 	case "PUT":
-		response = self.This.Put(ctx, args)
+		response = c.This.Put(ctx, args)
 	case "PATCH":
-		response = self.This.Patch(ctx, args)
+		response = c.This.Patch(ctx, args)
 	case "DELETE":
-		response = self.This.Delete(ctx, args)
+		response = c.This.Delete(ctx, args)
 	case "HEAD":
-		response = self.This.Head(ctx, args)
+		response = c.This.Head(ctx, args)
 	case "TRACE":
-		response = self.This.Trace(ctx, args)
+		response = c.This.Trace(ctx, args)
 	default:
 		response = Http405()
 	}
 }
 
-func (self *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response) {
+func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response) {
 	return true, nil
 }
 
-func (self *BaseController) Finish(*Response) {}
+func (c *BaseController) Finish(*Response) {}
 
-func (self *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Head(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Head(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Put(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Put(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Patch(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Patch(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
-func (self *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
