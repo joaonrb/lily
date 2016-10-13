@@ -19,7 +19,7 @@ func TestLineIterator(t *testing.T) {
 	//defer os.Remove(tmp)
 	err := ioutil.WriteFile(tmp, []byte(content), 0644)
 	if err != nil {
-		fmt.Printf("Tmp file couldn't be writen becauser error %s", err.Error())
+		fmt.Printf("Tmp file couldn't be written becauser error %s", err.Error())
 		os.Exit(1)
 	}
 	iter, err := NewLineIterator(tmp)
@@ -41,7 +41,7 @@ func TestGenerateBase64StringSize(t *testing.T) {
 	for i, n := range []int{0, 1, 2, 5, 10, 25, 30, 50, 75, 100} {
 		hex := GenerateBase64String(n)
 		if len(hex) != n {
-			t.Errorf("%d - Size of GenerateBase64String(%d) sould be %d, got %d instead.", i, n, n, len(hex))
+			t.Errorf("%d - Size of GenerateBase64String(%d) should be %d, got %d instead.", i, n, n, len(hex))
 			return
 		}
 	}
