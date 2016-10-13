@@ -6,11 +6,13 @@ go:
   - 1.7
   - tip
 
+before_install:
+  - sudo add-apt-repository ppa:masterminds/glide
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install glide -y
+
 install:
-  - go get github.com/op/go-logging
-  - go get gopkg.in/yaml.v2
-  - go get github.com/valyala/fasthttp
-  - go get github.com/joaonrb/lily
+  - glide install lily
 
 script:
   - go test github.com/joaonrb/lily -v -coverprofile=coverage.txt -covermode=atomic
