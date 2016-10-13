@@ -57,11 +57,6 @@ var (
 	}
 )
 
-// Critical logging
-func Critical(message string, args ...interface{}) {
-	log.Criticalf(message, args...)
-}
-
 // Error logging
 func Error(message string, args ...interface{}) {
 	log.Errorf(message, args...)
