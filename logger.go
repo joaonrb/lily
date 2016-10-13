@@ -1,4 +1,5 @@
 package lily
+
 // Author João Nuno.
 //
 // joaonrb@gmail.com
@@ -28,20 +29,20 @@ const (
 	// Console logging
 	CONSOLE = "console"
 	// File Logging
-	FILE    = "file"
+	FILE = "file"
 )
 
 const (
-	// Critical level 
+	// Critical level
 	CRITICAL = "critical"
 	// Error level
-	ERROR    = "error"
+	ERROR = "error"
 	// Warning level
-	WARNING  = "warning"
+	WARNING = "warning"
 	// Info level
-	INFO     = "info"
+	INFO = "info"
 	// Debug level
-	DEBUG    = "debug"
+	DEBUG = "debug"
 )
 
 // Log default settings
@@ -62,7 +63,6 @@ var (
 		DEBUG:    logging.DEBUG,
 	}
 )
-
 
 // Critical logging
 func Critical(message string, args ...interface{}) {

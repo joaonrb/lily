@@ -1,4 +1,5 @@
 package lily
+
 // Author João Nuno.
 //
 // joaonrb@gmail.com
@@ -28,13 +29,13 @@ var (
 	http405   = HttpError(fasthttp.StatusMethodNotAllowed)
 	http500   = HttpError(fasthttp.StatusInternalServerError)
 	// Default Http 400 error
-	Http400   = func() *Response { return http400 }
+	Http400 = func() *Response { return http400 }
 	// Default Http 404 error
-	Http404   = func() *Response { return http404 }
+	Http404 = func() *Response { return http404 }
 	// Default Http 405 error
-	Http405   = func() *Response { return http405 }
+	Http405 = func() *Response { return http405 }
 	// Default Http 500 error
-	Http500   = func() *Response { return http500 }
+	Http500 = func() *Response { return http500 }
 )
 
 func sendResponse(ctx *fasthttp.RequestCtx, response *Response) {
