@@ -1,11 +1,4 @@
 package lily
-
-import (
-	"testing"
-	"io/ioutil"
-)
-
-
 // Author João Nuno.
 //
 // joaonrb@gmail.com
