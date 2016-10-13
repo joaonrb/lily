@@ -15,7 +15,7 @@ install:
   - glide install lily
 
 script:
-  - go test github.com/joaonrb/lily -v -coverprofile=coverage.txt -covermode=atomic
+  - go test lily -v -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
