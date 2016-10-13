@@ -59,32 +59,32 @@ var (
 
 // Critical logging
 func Critical(message string, args ...interface{}) {
-	log.Critical(message, args...)
+	log.Criticalf(message, args...)
 }
 
 // Error logging
 func Error(message string, args ...interface{}) {
-	log.Error(message, args...)
+	log.Errorf(message, args...)
 }
 
 // Warning logging
 func Warning(message string, args ...interface{}) {
-	log.Warning(message, args...)
+	log.Warningf(message, args...)
 }
 
 // Info logging
 func Info(message string, args ...interface{}) {
-	log.Info(message, args...)
+	log.Infof(message, args...)
 }
 
 // Notice logging
 func Notice(message string, args ...interface{}) {
-	log.Notice(message, args...)
+	log.Noticef(message, args...)
 }
 
 // Debug logging
 func Debug(message string, args ...interface{}) {
-	log.Debug(message, args...)
+	log.Debugf(message, args...)
 }
 
 // Load logger
