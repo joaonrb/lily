@@ -1,9 +1,15 @@
-// Package lily
+package lily
+
+import (
+	"testing"
+	"io/ioutil"
+)
+
+
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
-package lily
 
 import (
 	"fmt"

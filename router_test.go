@@ -1,15 +1,13 @@
 package lily
+// Author João Nuno.
+//
+// joaonrb@gmail.com
+//
 
 import (
 	"reflect"
 	"testing"
 )
-
-//
-// Author João Nuno.
-//
-// joaonrb@gmail.com
-//
 
 // Test simple route
 func TestRouterRoutePath(t *testing.T) {
