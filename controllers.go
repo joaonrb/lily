@@ -1,19 +1,19 @@
 // Package lily
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 package lily
 
 import (
-	"github.com/valyala/fasthttp"
 	"bytes"
+	"github.com/valyala/fasthttp"
 )
 
 type Response struct {
-	Status           int
-	Headers          map[string]string
-	Body             string
+	Status  int
+	Headers map[string]string
+	Body    string
 }
 
 func NewResponse() *Response {
@@ -40,7 +40,6 @@ func sendResponse(ctx *fasthttp.RequestCtx, response *Response) {
 	ctx.SetBodyString(response.Body)
 }
 
-
 type IController interface {
 	Init(IController)
 	Handle(*fasthttp.RequestCtx, map[string]string)
@@ -56,10 +55,10 @@ type IController interface {
 }
 
 type BaseController struct {
-	This  IController
+	This IController
 }
 
-func (c *BaseController) Init(controller IController)  {
+func (c *BaseController) Init(controller IController) {
 	c.This = controller
 }
 
@@ -130,4 +129,3 @@ func (c *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]st
 func (c *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
-

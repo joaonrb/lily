@@ -1,8 +1,8 @@
 package lily
 
 import (
-	"testing"
 	"github.com/valyala/fasthttp"
+	"testing"
 )
 
 //
@@ -11,7 +11,6 @@ import (
 // joaonrb@gmail.com
 //
 func TestController(t *testing.T) {
-
 
 	for _, method := range []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE"} {
 		ctx := MockRequest(method, "/base")

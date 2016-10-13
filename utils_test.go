@@ -12,7 +12,6 @@ import (
 	"testing"
 )
 
-
 func TestLineIterator(t *testing.T) {
 	tmp := "/tmp/line_iterator.txt"
 	content := "line1\n1\n"

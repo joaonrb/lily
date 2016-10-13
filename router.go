@@ -1,6 +1,6 @@
 // Package lily
 // Author João Nuno.
-// 
+//
 // joaonrb@gmail.com
 //
 // Default router for Lily. Load the router in main app. Router must implement IRouter.
@@ -10,9 +10,9 @@
 package lily
 
 import (
-	"regexp"
-    "strings"
 	"bytes"
+	"regexp"
+	"strings"
 )
 
 var (
@@ -27,8 +27,12 @@ type route struct {
 }
 
 func getController(uri []byte) (IController, map[string]string) {
-	if uri[0] == '/' { uri = uri[1:] }
-	if len(uri) > 0 && uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
+	if uri[0] == '/' {
+		uri = uri[1:]
+	}
+	if len(uri) > 0 && uri[len(uri)-1] == '/' {
+		uri = uri[:len(uri)-1]
+	}
 	params := map[string]string{}
 	way := urls
 	for _, part := range bytes.Split(uri, []byte{'/'}) {
@@ -52,8 +56,12 @@ func getController(uri []byte) (IController, map[string]string) {
 
 func Url(uri string, controller IController) error {
 	controller.Init(controller)
-	if uri[0] == '/' { uri = uri[1:] }
-	if len(uri) > 0 && uri[len(uri)-1] == '/' { uri = uri[:len(uri)-1] }
+	if uri[0] == '/' {
+		uri = uri[1:]
+	}
+	if len(uri) > 0 && uri[len(uri)-1] == '/' {
+		uri = uri[:len(uri)-1]
+	}
 	way := urls
 	parts := strings.Split(uri, "/")
 	var err error

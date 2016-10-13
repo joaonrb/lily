@@ -6,11 +6,11 @@ package lily
 
 import (
 	"bufio"
+	"github.com/valyala/fasthttp"
 	"io"
 	"math/rand"
 	"os"
 	"time"
-	"github.com/valyala/fasthttp"
 )
 
 // File iterator line by line
@@ -94,7 +94,6 @@ func GenerateBase64String(n int) string {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 func MockRequest(method, path string) *fasthttp.RequestCtx {
 	controller, args := getController([]byte(path))

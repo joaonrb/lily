@@ -6,12 +6,11 @@
 package lily
 
 import (
+	"fmt"
+	"github.com/valyala/fasthttp"
 	"os"
 	"testing"
-	"github.com/valyala/fasthttp"
-	"fmt"
 )
-
 
 type DummyController struct {
 	BaseController
