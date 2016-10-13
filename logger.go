@@ -26,23 +26,16 @@ const (
 )
 
 const (
-	// Console logging
-	CONSOLE = "console"
-	// File Logging
-	FILE = "file"
+	CONSOLE = "console" // Console logging
+	FILE    = "file"    // File Logging
 )
 
 const (
-	// Critical level
-	CRITICAL = "critical"
-	// Error level
-	ERROR = "error"
-	// Warning level
-	WARNING = "warning"
-	// Info level
-	INFO = "info"
-	// Debug level
-	DEBUG = "debug"
+	CRITICAL = "critical" // Critical level
+	ERROR    = "error"    // Error level
+	WARNING  = "warning"  // Warning level
+	INFO     = "info"     // Info level
+	DEBUG    = "debug"    // Debug level
 )
 
 // Log default settings
