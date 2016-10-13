@@ -9,6 +9,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// The core handler to be called.
 func CoreHandler(ctx *fasthttp.RequestCtx) {
 	controller, args := getController(ctx.Path())
 	if controller == nil {

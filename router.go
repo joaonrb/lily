@@ -54,6 +54,7 @@ func getController(uri []byte) (IController, map[string]string) {
 	return nil, nil
 }
 
+// Register an controller to a path
 func Url(uri string, controller IController) error {
 	controller.Init(controller)
 	if uri[0] == '/' {

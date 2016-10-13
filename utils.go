@@ -20,6 +20,7 @@ type lineIterator struct {
 	hasNext bool
 }
 
+// Create a line iterator
 func NewLineIterator(filename string) (*lineIterator, error) {
 
 	// Open file
@@ -45,6 +46,7 @@ func readLine(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 
+// Next line in file
 func (iter *lineIterator) Next() string {
 	line, err := readLine(iter.buffer)
 	if err == io.EOF {
@@ -53,10 +55,12 @@ func (iter *lineIterator) Next() string {
 	return line
 }
 
+// Check if next line exist
 func (iter *lineIterator) HasNext() bool {
 	return iter.hasNext
 }
 
+// Close file descriptor
 func (iter *lineIterator) Close() {
 	iter.file.Close()
 }
@@ -89,12 +93,14 @@ func GenerateBase64Bytes(n int) []byte {
 	return result
 }
 
+// Generate a base 64 string random
 func GenerateBase64String(n int) string {
 	return string(GenerateBase64Bytes(n))
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Mock the request and return a response
 func MockRequest(method, path string) *fasthttp.RequestCtx {
 	controller, args := getController([]byte(path))
 	r := fasthttp.RequestHeader{}

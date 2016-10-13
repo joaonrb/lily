@@ -5,6 +5,7 @@
 //
 package lily
 
+// Settings for logger
 type SLogger struct {
 	Type   string `yaml:"type,omitempty"`
 	Layout string `yaml:"layout,omitempty"`

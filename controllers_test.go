@@ -1,3 +1,8 @@
+// Package lily
+// Author João Nuno.
+//
+// joaonrb@gmail.com
+//
 package lily
 
 import (
@@ -5,11 +10,7 @@ import (
 	"testing"
 )
 
-//
-// Author João Nuno.
-//
-// joaonrb@gmail.com
-//
+// Test base controller
 func TestController(t *testing.T) {
 
 	for _, method := range []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE"} {
@@ -23,6 +24,7 @@ func TestController(t *testing.T) {
 	}
 }
 
+// Test a controller implementation
 func TestDummyController(t *testing.T) {
 	ctx := MockRequest("GET", "/ass")
 	if ctx.Response.StatusCode() != 200 {

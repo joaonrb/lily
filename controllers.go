@@ -16,19 +16,25 @@ type Response struct {
 	Body    string
 }
 
+// Creates a new response with 200 status as default
 func NewResponse() *Response {
 	return &Response{Status: fasthttp.StatusOK}
 }
 
 var (
+	// Default HttpError processor
 	HttpError = func(status int) *Response { return &Response{Status: status, Body: fasthttp.StatusMessage(status)} }
 	http400   = HttpError(fasthttp.StatusBadRequest)
 	http404   = HttpError(fasthttp.StatusNotFound)
 	http405   = HttpError(fasthttp.StatusMethodNotAllowed)
 	http500   = HttpError(fasthttp.StatusInternalServerError)
+	// Default Http 400 error
 	Http400   = func() *Response { return http400 }
+	// Default Http 404 error
 	Http404   = func() *Response { return http404 }
+	// Default Http 405 error
 	Http405   = func() *Response { return http405 }
+	// Default Http 500 error
 	Http500   = func() *Response { return http500 }
 )
 
@@ -58,6 +64,7 @@ type BaseController struct {
 	This IController
 }
 
+// Initiates the controller
 func (c *BaseController) Init(controller IController) {
 	c.This = controller
 }
@@ -96,36 +103,45 @@ func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string
 	}
 }
 
+// Check request and initiates any process required before handling
 func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response) {
 	return true, nil
 }
 
+// Close the response. Add any header or so.
 func (c *BaseController) Finish(*Response) {}
 
+// Get method implementation
 func (c *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
+// Get method implementation
 func (c *BaseController) Head(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
+// Post method implementation
 func (c *BaseController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
+// Put method implementation
 func (c *BaseController) Put(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
+// Patch method implementation
 func (c *BaseController) Patch(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
+// Delete method implementation
 func (c *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
 
+// Trace method implementation
 func (c *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }

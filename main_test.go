@@ -16,7 +16,8 @@ type DummyController struct {
 	BaseController
 }
 
-func (self *DummyController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
+// Get for dummy
+func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	response := NewResponse()
 	if name, ok := args["name"]; ok {
 		response.Body = fmt.Sprintf("<h1>I'm a dummy and my name is %s</h1>", name)
@@ -26,6 +27,7 @@ func (self *DummyController) Get(request *fasthttp.RequestCtx, args map[string]s
 	return response
 }
 
+// Init tests
 func TestMain(m *testing.M) {
 
 	var (

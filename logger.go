@@ -26,15 +26,22 @@ const (
 )
 
 const (
+	// Console logging
 	CONSOLE = "console"
+	// File Logging
 	FILE    = "file"
 )
 
 const (
+	// Critical level 
 	CRITICAL = "critical"
+	// Error level
 	ERROR    = "error"
+	// Warning level
 	WARNING  = "warning"
+	// Info level
 	INFO     = "info"
+	// Debug level
 	DEBUG    = "debug"
 )
 
@@ -47,6 +54,7 @@ const (
 )
 
 var (
+	// Logging map of levels
 	LOGGING_LEVELS = map[string]logging.Level{
 		CRITICAL: logging.CRITICAL,
 		ERROR:    logging.ERROR,
@@ -56,30 +64,38 @@ var (
 	}
 )
 
+
+// Critical logging
 func Critical(message string, args ...interface{}) {
 	log.Criticalf(message, args...)
 }
 
+// Error logging
 func Error(message string, args ...interface{}) {
 	log.Errorf(message, args...)
 }
 
+// Warning logging
 func Warning(message string, args ...interface{}) {
 	log.Warningf(message, args...)
 }
 
+// Info logging
 func Info(message string, args ...interface{}) {
 	log.Infof(message, args...)
 }
 
+// Notice logging
 func Notice(message string, args ...interface{}) {
 	log.Noticef(message, args...)
 }
 
+// Debug logging
 func Debug(message string, args ...interface{}) {
 	log.Debugf(message, args...)
 }
 
+// Load logger
 func LoadLogger(loggers []SLogger) {
 	var out io.Writer
 	goLoggers := make([]logging.Backend, 0)
@@ -103,12 +119,14 @@ func LoadLogger(loggers []SLogger) {
 	log.SetBackend(logging.MultiLogger(goLoggers...))
 }
 
+// Rotate writer
 type RotatoryWriter struct {
 	doRotation bool
 	file       *os.File
 	filePath   string
 }
 
+// Open the writer
 func OpenRotatoryWriter(path string) io.Writer {
 	out, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 	if err != nil {
@@ -131,19 +149,20 @@ func OpenRotatoryWriter(path string) io.Writer {
 	return rotatoryWriter
 }
 
-func (self *RotatoryWriter) Write(p []byte) (n int, err error) {
-	if self.doRotation {
-		self.doRotation = false
-		self.file.Close()
-		out, err := os.OpenFile(self.filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
+// Write on file
+func (writer *RotatoryWriter) Write(p []byte) (n int, err error) {
+	if writer.doRotation {
+		writer.doRotation = false
+		writer.file.Close()
+		out, err := os.OpenFile(writer.filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 		if err != nil {
 			panic(
 				fmt.Errorf(
-					"Failed to open log file %s with permissions %d: %s", self.filePath, loggerPermissions, err,
+					"Failed to open log file %s with permissions %d: %s", writer.filePath, loggerPermissions, err,
 				),
 			)
 		}
-		self.file = out
+		writer.file = out
 	}
-	return self.file.Write(p)
+	return writer.file.Write(p)
 }

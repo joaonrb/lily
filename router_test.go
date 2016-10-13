@@ -11,6 +11,7 @@ import (
 // joaonrb@gmail.com
 //
 
+// Test simple route
 func TestRouterRoutePath(t *testing.T) {
 	controller, _ := getController([]byte("/"))
 	if reflect.TypeOf(controller) != reflect.TypeOf(&DummyController{}) {
@@ -18,6 +19,7 @@ func TestRouterRoutePath(t *testing.T) {
 	}
 }
 
+// Test route with parameters
 func TestRouterRouteRegexPath(t *testing.T) {
 	controller, args := getController([]byte("/ass"))
 	if reflect.TypeOf(controller) != reflect.TypeOf(&DummyController{}) {
