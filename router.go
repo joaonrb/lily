@@ -1,7 +1,5 @@
 package lily
 
-import "regexp"
-
 // Author João Nuno.
 //
 // joaonrb@gmail.com
