@@ -7,6 +7,8 @@ package lily
 import (
 	"github.com/valyala/fasthttp"
 	"testing"
+	"net/http"
+	"io/ioutil"
 )
 
 // Test status of std errors
@@ -27,8 +29,7 @@ func TestStatusOfHttpErrors(t *testing.T) {
 
 // Test base controller
 func TestController(t *testing.T) {
-
-	for _, method := range []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE", "get", "post"} {
+	for _, method := range []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE"} {
 		ctx := MockRequest(method, "/base")
 		if ctx.Response.StatusCode() != fasthttp.StatusMethodNotAllowed {
 			t.Errorf("Status is %d instead of 405", ctx.Response.StatusCode())
@@ -41,17 +42,25 @@ func TestController(t *testing.T) {
 
 // Test a controller implementation
 func TestDummyController(t *testing.T) {
-	ctx := MockRequest("GET", "/ass")
-	if ctx.Response.StatusCode() != 200 {
-		t.Errorf("Status is %d instead of 200", ctx.Response.StatusCode())
+	response, err := http.Get("http://127.0.0.1:3333/ass")
+	if err != nil {
+		t.Errorf("Failed with error %s", err.Error())
 	}
-	if string(ctx.Response.Body()) != "<h1>I'm a dummy and my name is ass</h1>" {
-		t.Errorf("Body wasn't the expected. Got %s", string(ctx.Response.Body()))
+	if response.StatusCode != 200 {
+		t.Errorf("Status is %d instead of 200", response.StatusCode)
 	}
-	if value := ctx.Response.Header.Peek("x-dummy"); len(value) == 0 {
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		t.Errorf("Failed with error %s", err.Error())
+	}
+	if string(body) != "<h1>I'm a dummy and my name is ass</h1>" {
+		t.Errorf("Body wasn't the expected. Got %s", string(body))
+	}
+	if value := response.Header.Get("x-dummy"); len(value) == 0 {
 		t.Error("Response don't have Content-type header")
-	} else if string(value) != "dummy" {
-		t.Errorf("Content-type header is not dummy. Is %s instead.", value)
+	} else if value != "dummy" {
+		t.Errorf("x-ummy header is not dummy. Is %s instead.", value)
 	}
 }
 

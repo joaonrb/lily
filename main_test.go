@@ -38,6 +38,7 @@ func (dummy *DummyController) Start(ctx *fasthttp.RequestCtx, args map[string]st
 }
 
 func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+	request.SetContentType("text/html")
 	response.Headers["x-dummy"] = "dummy"
 }
 
@@ -52,5 +53,8 @@ func TestMain(m *testing.M) {
 	Url("/", controller)
 	Url("/:(?P<name>\\w+)", controller)
 	Url("/base", base)
+
+	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}
+	go server.ListenAndServe(":3333")
 	os.Exit(m.Run())
 }
