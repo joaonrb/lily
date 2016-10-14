@@ -16,7 +16,6 @@ type DummyController struct {
 	BaseController
 }
 
-// Get for dummy
 func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	response := NewResponse()
 	if name, ok := args["name"]; ok {
@@ -27,7 +26,11 @@ func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]
 	return response
 }
 
-// Init tests
+func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+	response.Headers["x-dummy"] = "dummy"
+}
+
+
 func TestMain(m *testing.M) {
 
 	var (

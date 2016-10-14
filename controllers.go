@@ -18,12 +18,16 @@ type Response struct {
 
 // Creates a new response with 200 status as default
 func NewResponse() *Response {
-	return &Response{Status: fasthttp.StatusOK}
+	return &Response{Status: fasthttp.StatusOK, Headers: map[string]string{}}
 }
 
 var (
 	// Default HttpError processor
-	HttpError = func(status int) *Response { return &Response{Status: status, Body: fasthttp.StatusMessage(status)} }
+	HttpError = func(status int) *Response { return &Response{
+		Status: status,
+		Headers: map[string]string{},
+		Body: fasthttp.StatusMessage(status),
+	} }
 	http400   = HttpError(fasthttp.StatusBadRequest)
 	http404   = HttpError(fasthttp.StatusNotFound)
 	http405   = HttpError(fasthttp.StatusMethodNotAllowed)
@@ -50,7 +54,7 @@ type IController interface {
 	Init(IController)
 	Handle(*fasthttp.RequestCtx, map[string]string)
 	Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response)
-	Finish(*Response)
+	Finish(*fasthttp.RequestCtx, map[string]string, *Response)
 	Get(*fasthttp.RequestCtx, map[string]string) *Response
 	Head(*fasthttp.RequestCtx, map[string]string) *Response
 	Post(*fasthttp.RequestCtx, map[string]string) *Response
@@ -77,7 +81,7 @@ func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string
 			Error("Unexpected error on call %s %s: %v", ctx.Method(), ctx.Path(), recovery)
 			response = Http500()
 		}
-		c.This.Finish(response)
+		c.This.Finish(ctx, args, response)
 		sendResponse(ctx, response)
 	}()
 	if !ok {
@@ -109,7 +113,7 @@ func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *
 }
 
 // Close the response. Add any header or so.
-func (c *BaseController) Finish(*Response) {}
+func (c *BaseController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {}
 
 // Get method implementation
 func (c *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {

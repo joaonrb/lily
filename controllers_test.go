@@ -32,4 +32,25 @@ func TestDummyController(t *testing.T) {
 	if string(ctx.Response.Body()) != "<h1>I'm a dummy and my name is ass</h1>" {
 		t.Error("Body wasn't the expected.")
 	}
+	if value := ctx.Response.Header.Peek("x-dummy"); len(value) == 0 {
+		t.Error("Response don't have Content-type header")
+	} else if string(value) != "dummy" {
+		t.Errorf("Content-type header is not dummy. Is %s instead.", value)
+	}
+}
+
+// Test status of std errors
+func TestStatusOfHttpErrors(t *testing.T) {
+	if Http400().Status != 400 {
+		t.Error("Http 400 status is not 400")
+	}
+	if Http404().Status != 404 {
+		t.Error("Http 404 status is not 404")
+	}
+	if Http405().Status != 405 {
+		t.Error("Http 405 status is not 405")
+	}
+	if Http500().Status != 500 {
+		t.Error("Http 500 status is not 500")
+	}
 }
