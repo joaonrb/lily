@@ -55,6 +55,6 @@ func TestMain(m *testing.M) {
 	Url("/base", base)
 
 	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}
-	go server.ListenAndServe(":3333")
-	os.Exit(m.Run())
+	go os.Exit(m.Run())
+	panic(server.ListenAndServe(":3333"))
 }
