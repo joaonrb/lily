@@ -52,7 +52,7 @@ func TestMain(m *testing.M) {
 	)
 
 	Url("/", controller)
-	Url("/:(?P<name>\\w+)", controller)
+	Url("/:^(?P<name>\\w+)$", controller)
 	Url("/base", base)
 
 	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}

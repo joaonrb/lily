@@ -65,6 +65,25 @@ func TestDummyController(t *testing.T) {
 }
 
 // Test a controller implementation
+func TestDummyController404(t *testing.T) {
+	response, err := http.Get("http://127.0.0.1:3333/1.234")
+	if err != nil {
+		t.Errorf("Failed with error %s", err.Error())
+	}
+	if response.StatusCode != 404 {
+		t.Errorf("Status is %d instead of 404", response.StatusCode)
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		t.Errorf("Failed with error %s", err.Error())
+	}
+	if string(body) != fasthttp.StatusMessage(fasthttp.StatusNotFound) {
+		t.Errorf("Body wasn't the expected. Got %s", string(body))
+	}
+}
+
+// Test a controller implementation
 func TestDummyControllerWithError(t *testing.T) {
 	ctx := MockRequest("POST", "/ass")
 	if ctx.Response.StatusCode() != 500 {
