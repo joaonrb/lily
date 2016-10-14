@@ -26,8 +26,15 @@ func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]
 	return response
 }
 
-func (dummy *DummyController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (dummy *DummyController) Post(ctx *fasthttp.RequestCtx, args map[string]string) *Response {
 	panic("Dummy on fire")
+}
+
+func (dummy *DummyController) Start(ctx *fasthttp.RequestCtx, args map[string]string) (bool, *Response) {
+	if string(ctx.Method()) == "PUT" {
+		return false, &Response{Status: 403, Headers: map[string]string{}, Body: "You cannot be here."}
+	}
+	return true, nil
 }
 
 func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {

@@ -34,7 +34,7 @@ func TestController(t *testing.T) {
 			t.Errorf("Status is %d instead of 405", ctx.Response.StatusCode())
 		}
 		if string(ctx.Response.Body()) != fasthttp.StatusMessage(fasthttp.StatusMethodNotAllowed) {
-			t.Error("Body wasn't the expected.")
+			t.Errorf("Body wasn't the expected. Got %s", string(ctx.Response.Body()))
 		}
 	}
 }
@@ -46,7 +46,7 @@ func TestDummyController(t *testing.T) {
 		t.Errorf("Status is %d instead of 200", ctx.Response.StatusCode())
 	}
 	if string(ctx.Response.Body()) != "<h1>I'm a dummy and my name is ass</h1>" {
-		t.Error("Body wasn't the expected.")
+		t.Errorf("Body wasn't the expected. Got %s", string(ctx.Response.Body()))
 	}
 	if value := ctx.Response.Header.Peek("x-dummy"); len(value) == 0 {
 		t.Error("Response don't have Content-type header")
@@ -62,7 +62,23 @@ func TestDummyControllerWithError(t *testing.T) {
 		t.Errorf("Status is %d instead of 500", ctx.Response.StatusCode())
 	}
 	if string(ctx.Response.Body()) != fasthttp.StatusMessage(fasthttp.StatusInternalServerError) {
-		t.Error("Body wasn't the expected.")
+		t.Errorf("Body wasn't the expected. Got %s", string(ctx.Response.Body()))
+	}
+	if value := ctx.Response.Header.Peek("x-dummy"); len(value) == 0 {
+		t.Error("Response don't have Content-type header")
+	} else if string(value) != "dummy" {
+		t.Errorf("Content-type header is not dummy. Is %s instead.", value)
+	}
+}
+
+// Test a controller implementation
+func TestDummyControllerFiltered(t *testing.T) {
+	ctx := MockRequest("PUT", "/ass")
+	if ctx.Response.StatusCode() != 403 {
+		t.Errorf("Status is %d instead of 503", ctx.Response.StatusCode())
+	}
+	if string(ctx.Response.Body()) != "You cannot be here." {
+		t.Errorf("Body wasn't the expected. Got %s", string(ctx.Response.Body()))
 	}
 	if value := ctx.Response.Header.Peek("x-dummy"); len(value) == 0 {
 		t.Error("Response don't have Content-type header")
