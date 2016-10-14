@@ -10,6 +10,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"os"
 	"testing"
+	"time"
 )
 
 type DummyController struct {
@@ -55,6 +56,7 @@ func TestMain(m *testing.M) {
 	Url("/base", base)
 
 	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}
-	go os.Exit(m.Run())
-	panic(server.ListenAndServe(":3333"))
+	go server.ListenAndServe("0.0.0.0:3333")
+	<- time.After(1 * time.Second)
+	os.Exit(m.Run())
 }
