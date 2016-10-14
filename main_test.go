@@ -26,6 +26,10 @@ func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]
 	return response
 }
 
+func (dummy *DummyController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
+	panic("Dummy on fire")
+}
+
 func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
 	response.Headers["x-dummy"] = "dummy"
 }

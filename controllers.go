@@ -102,8 +102,6 @@ func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string
 		response = c.This.Head(ctx, args)
 	case "TRACE":
 		response = c.This.Trace(ctx, args)
-	default:
-		response = Http405()
 	}
 }
 
