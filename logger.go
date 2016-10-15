@@ -42,7 +42,7 @@ const (
 const (
 	defaultLoggerType   = "console"
 	defaultLoggerPath   = ""
-	defaultLoggerLayout = "%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
+	defaultLoggerLayout = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
 	defaultLoggerLevel  = INFO
 )
 
@@ -56,6 +56,11 @@ var (
 		DEBUG:    logging.DEBUG,
 	}
 )
+
+// Error logging
+func Critical(message string, args ...interface{}) {
+	log.Criticalf(message, args...)
+}
 
 // Error logging
 func Error(message string, args ...interface{}) {

@@ -36,7 +36,7 @@ func NewLineIterator(filename string) (*lineIterator, error) {
 func readLine(r *bufio.Reader) (string, error) {
 	var (
 		isPrefix bool  = true
-		err      error = nil
+		err      error
 		line, ln []byte
 	)
 	for isPrefix && err == nil {

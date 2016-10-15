@@ -2,10 +2,11 @@ package: github.com/joaonrb/lily
 homepage: https://joaonrb.ninja/lily
 license: MIT
 owners:
-- name: João Nuno
-  email: joaonrb@gmail.com
-  homepage: httpa://joaonrb.ninja/
-- package: github.com/valyala/fasthttp
-  version: ^20160617.0.0
-- package: github.com/op/go-logging
-  version: ^1.0.0
+  - name: João Nuno
+    email: joaonrb@gmail.com
+    homepage: httpa://joaonrb.ninja/
+imports:
+  - package: github.com/valyala/fasthttp
+    version: ^20160617.0.0
+  - package: github.com/op/go-logging
+    version: 970db52
