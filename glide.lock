@@ -1,5 +1,5 @@
 hash: 7623b4ed6ea064d6dc1addb8e6c2fd7aea523dd48ae4b5567ce9d2b2db6db340
-updated: 2016-10-15T18:28:37.546832125+01:00
+updated: 2016-10-15T19:32:15.512532254+01:00
 imports:
 - name: github.com/klauspost/compress
   version: d0763f13d86e630f5d3ea9fa848a6ecc68255297
