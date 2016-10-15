@@ -150,3 +150,19 @@ func (c *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]st
 func (c *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
 	return Http405()
 }
+
+type Controller struct {
+	BaseController
+}
+
+func (controller Controller) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+	request.SetContentType("text/html")
+}
+
+type JsonController struct {
+	BaseController
+}
+
+func (controller JsonController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+	request.SetContentType("application/json")
+}

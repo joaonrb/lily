@@ -13,7 +13,7 @@ import (
 // TestRouterRoutePath test simple route
 func TestRouterRoutePath(t *testing.T) {
 	controller, _ := getController([]byte("/"))
-	if reflect.TypeOf(controller) != reflect.TypeOf(&DummyController{}) {
+	if reflect.TypeOf(controller) != reflect.TypeOf(&JsonController{}) {
 		t.Error("Contoller is not dummy")
 	}
 }

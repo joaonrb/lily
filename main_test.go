@@ -14,7 +14,7 @@ import (
 )
 
 type DummyController struct {
-	BaseController
+	Controller
 }
 
 func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
@@ -39,18 +39,19 @@ func (dummy *DummyController) Start(ctx *fasthttp.RequestCtx, args map[string]st
 }
 
 func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
-	request.SetContentType("text/html")
+	dummy.Controller.Finish(request, args, response)
 	response.Headers["x-dummy"] = "dummy"
 }
 
 func TestMain(m *testing.M) {
 
 	var (
-		controller IController = &DummyController{}
-		base       IController = &BaseController{}
+		controller     IController = &DummyController{}
+		base           IController     = &BaseController{}
+		jsonController IController = &JsonController{}
 	)
 
-	Url("/", controller)
+	Url("/", jsonController)
 	Url("/base/", base)
 	Url("/:(?P<name>^[a-zA-Z0-9]+)$", controller)
 
