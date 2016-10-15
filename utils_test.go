@@ -40,10 +40,10 @@ func TestLineIterator(t *testing.T) {
 func TestLineIteratorFileDontExist(t *testing.T) {
 	tmp := "/tmp/line_iterator_not.txt"
 	iter, err := NewLineIterator(tmp)
-	defer iter.Close()
 	switch {
 	case err == nil:
 		t.Error("Error do not happened")
+		iter.Close()
 	}
 }
 
