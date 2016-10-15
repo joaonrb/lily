@@ -1,0 +1,20 @@
+hash: 7623b4ed6ea064d6dc1addb8e6c2fd7aea523dd48ae4b5567ce9d2b2db6db340
+updated: 2016-10-15T18:28:37.546832125+01:00
+imports:
+- name: github.com/klauspost/compress
+  version: d0763f13d86e630f5d3ea9fa848a6ecc68255297
+  subpackages:
+  - flate
+  - gzip
+  - zlib
+- name: github.com/klauspost/cpuid
+  version: 09cded8978dc9e80714c4d85b0322337b0a1e5e0
+- name: github.com/klauspost/crc32
+  version: 19b0b332c9e4516a6370a0456e6182c3b5036720
+- name: github.com/op/go-logging
+  version: 970db520ece77730c7e4724c61121037378659d9
+- name: github.com/valyala/fasthttp
+  version: d42167fd04f636e20b005e9934159e95454233c7
+  subpackages:
+  - fasthttputil
+testImports: []
