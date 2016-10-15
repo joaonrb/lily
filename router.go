@@ -36,7 +36,11 @@ func getController(uri []byte) (IController, map[string]string) {
 	params := map[string]string{}
 	way := urls
 	for _, part := range bytes.Split(uri, []byte{'/'}) {
-		if _, exist := way.paths[string(part)]; !exist {
+		value, exist := way.paths[string(part)]
+		switch {
+		case exist:
+			way = value
+		case way.regex != nil:
 			match := way.regex.FindSubmatch(part)
 			if len(match) > 0 {
 				params[way.regex.SubexpNames()[1]] = string(match[0])
@@ -44,8 +48,8 @@ func getController(uri []byte) (IController, map[string]string) {
 			} else {
 				return nil, nil
 			}
-		} else {
-			way = way.paths[string(part)]
+		default:
+			return nil, nil
 		}
 	}
 	if way != nil {

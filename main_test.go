@@ -52,11 +52,11 @@ func TestMain(m *testing.M) {
 	)
 
 	Url("/", controller)
-	Url("/:^(?P<name>\\w+)$", controller)
-	Url("/base", base)
+	Url("/base/", base)
+	Url("/:(?P<name>^[a-zA-Z0-9]+)$", controller)
 
 	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}
 	go server.ListenAndServe("0.0.0.0:3333")
-	<- time.After(1 * time.Second)
+	<- time.After(20 * time.Millisecond)
 	os.Exit(m.Run())
 }

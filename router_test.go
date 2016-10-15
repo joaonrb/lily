@@ -30,3 +30,11 @@ func TestRouterRouteRegexPath(t *testing.T) {
 		t.Errorf("Name is not ass. Is %s instead", name)
 	}
 }
+
+//// Test route with parameters
+//func TestRouterNoPath(t *testing.T) {
+//	ctx := MockRequest("GET", "/ass/ksbdfjv")
+//	if ctx.Response.StatusCode() != 404 {
+//		t.Errorf("Status not 404. Is %d instead.", ctx.Response.StatusCode())
+//	}
+//}
