@@ -52,10 +52,7 @@ func getController(uri []byte) (IController, map[string]string) {
 			return nil, nil
 		}
 	}
-	if way != nil {
-		return way.controller, params
-	}
-	return nil, nil
+	return way.controller, params
 }
 
 // Register an controller to a path
