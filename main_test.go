@@ -43,7 +43,6 @@ func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[stri
 	response.Headers["x-dummy"] = "dummy"
 }
 
-
 func TestMain(m *testing.M) {
 
 	var (
@@ -57,6 +56,6 @@ func TestMain(m *testing.M) {
 
 	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}
 	go server.ListenAndServe("0.0.0.0:3333")
-	<- time.After(20 * time.Millisecond)
+	<-time.After(20 * time.Millisecond)
 	os.Exit(m.Run())
 }

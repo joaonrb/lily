@@ -23,15 +23,17 @@ func NewResponse() *Response {
 
 var (
 	// Default HttpError processor
-	HttpError = func(status int) *Response { return &Response{
-		Status: status,
-		Headers: map[string]string{},
-		Body: fasthttp.StatusMessage(status),
-	} }
-	http400   = HttpError(fasthttp.StatusBadRequest)
-	http404   = HttpError(fasthttp.StatusNotFound)
-	http405   = HttpError(fasthttp.StatusMethodNotAllowed)
-	http500   = HttpError(fasthttp.StatusInternalServerError)
+	HttpError = func(status int) *Response {
+		return &Response{
+			Status:  status,
+			Headers: map[string]string{},
+			Body:    fasthttp.StatusMessage(status),
+		}
+	}
+	http400 = HttpError(fasthttp.StatusBadRequest)
+	http404 = HttpError(fasthttp.StatusNotFound)
+	http405 = HttpError(fasthttp.StatusMethodNotAllowed)
+	http500 = HttpError(fasthttp.StatusInternalServerError)
 	// Default Http 400 error
 	Http400 = func() *Response { return http400 }
 	// Default Http 404 error
@@ -111,7 +113,8 @@ func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *
 }
 
 // Close the response. Add any header or so.
-func (c *BaseController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {}
+func (c *BaseController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+}
 
 // Get method implementation
 func (c *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {

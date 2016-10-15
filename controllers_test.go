@@ -6,9 +6,9 @@ package lily
 //
 import (
 	"github.com/valyala/fasthttp"
-	"testing"
-	"net/http"
 	"io/ioutil"
+	"net/http"
+	"testing"
 )
 
 // Test status of std errors
