@@ -54,16 +54,16 @@ func sendResponse(ctx *fasthttp.RequestCtx, response *Response) {
 
 type IController interface {
 	Init(IController)
-	Handle(*fasthttp.RequestCtx, map[string]string)
-	Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response)
-	Finish(*fasthttp.RequestCtx, map[string]string, *Response)
-	Get(*fasthttp.RequestCtx, map[string]string) *Response
-	Head(*fasthttp.RequestCtx, map[string]string) *Response
-	Post(*fasthttp.RequestCtx, map[string]string) *Response
-	Put(*fasthttp.RequestCtx, map[string]string) *Response
-	Patch(*fasthttp.RequestCtx, map[string]string) *Response
-	Delete(*fasthttp.RequestCtx, map[string]string) *Response
-	Trace(*fasthttp.RequestCtx, map[string]string) *Response
+	Handle(*fasthttp.RequestCtx, map[string]interface{})
+	Start(*fasthttp.RequestCtx, map[string]interface{}) (bool, *Response)
+	Finish(*fasthttp.RequestCtx, map[string]interface{}, *Response)
+	Get(*fasthttp.RequestCtx, map[string]interface{}) *Response
+	Head(*fasthttp.RequestCtx, map[string]interface{}) *Response
+	Post(*fasthttp.RequestCtx, map[string]interface{}) *Response
+	Put(*fasthttp.RequestCtx, map[string]interface{}) *Response
+	Patch(*fasthttp.RequestCtx, map[string]interface{}) *Response
+	Delete(*fasthttp.RequestCtx, map[string]interface{}) *Response
+	Trace(*fasthttp.RequestCtx, map[string]interface{}) *Response
 }
 
 type BaseController struct {
@@ -76,7 +76,7 @@ func (c *BaseController) Init(controller IController) {
 }
 
 // Only touch Handle method if you understand what you are doing.
-func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string) {
+func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]interface{}) {
 	ok, response := c.This.Start(ctx, args)
 	defer func() {
 		if recovery := recover(); recovery != nil {
@@ -108,46 +108,46 @@ func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]string
 }
 
 // Check request and initiates any process required before handling
-func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]string) (bool, *Response) {
+func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]interface{}) (bool, *Response) {
 	return true, nil
 }
 
 // Close the response. Add any header or so.
-func (c *BaseController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+func (c *BaseController) Finish(request *fasthttp.RequestCtx, args map[string]interface{}, response *Response) {
 }
 
 // Get method implementation
-func (c *BaseController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Get(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
 // Get method implementation
-func (c *BaseController) Head(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Head(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
 // Post method implementation
-func (c *BaseController) Post(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Post(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
 // Put method implementation
-func (c *BaseController) Put(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Put(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
 // Patch method implementation
-func (c *BaseController) Patch(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Patch(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
 // Delete method implementation
-func (c *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Delete(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
 // Trace method implementation
-func (c *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (c *BaseController) Trace(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	return Http405()
 }
 
@@ -155,7 +155,7 @@ type Controller struct {
 	BaseController
 }
 
-func (controller Controller) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+func (controller Controller) Finish(request *fasthttp.RequestCtx, args map[string]interface{}, response *Response) {
 	request.SetContentType("text/html")
 }
 
@@ -163,6 +163,6 @@ type JsonController struct {
 	BaseController
 }
 
-func (controller JsonController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+func (controller JsonController) Finish(request *fasthttp.RequestCtx, args map[string]interface{}, response *Response) {
 	request.SetContentType("application/json")
 }

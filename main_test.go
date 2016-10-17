@@ -17,7 +17,7 @@ type DummyController struct {
 	Controller
 }
 
-func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]string) *Response {
+func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	response := NewResponse()
 	if name, ok := args["name"]; ok {
 		response.Body = fmt.Sprintf("<h1>I'm a dummy and my name is %s</h1>", name)
@@ -27,18 +27,18 @@ func (dummy *DummyController) Get(request *fasthttp.RequestCtx, args map[string]
 	return response
 }
 
-func (dummy *DummyController) Post(ctx *fasthttp.RequestCtx, args map[string]string) *Response {
+func (dummy *DummyController) Post(ctx *fasthttp.RequestCtx, args map[string]interface{}) *Response {
 	panic("Dummy on fire")
 }
 
-func (dummy *DummyController) Start(ctx *fasthttp.RequestCtx, args map[string]string) (bool, *Response) {
+func (dummy *DummyController) Start(ctx *fasthttp.RequestCtx, args map[string]interface{}) (bool, *Response) {
 	if string(ctx.Method()) == "PUT" {
 		return false, &Response{Status: 403, Headers: map[string]string{}, Body: "You cannot be here."}
 	}
 	return true, nil
 }
 
-func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]string, response *Response) {
+func (dummy *DummyController) Finish(request *fasthttp.RequestCtx, args map[string]interface{}, response *Response) {
 	dummy.Controller.Finish(request, args, response)
 	response.Headers["x-dummy"] = "dummy"
 }

@@ -26,14 +26,14 @@ type route struct {
 	controller IController
 }
 
-func getController(uri []byte) (IController, map[string]string) {
+func getController(uri []byte) (IController, map[string]interface{}) {
 	if uri[0] == '/' {
 		uri = uri[1:]
 	}
 	if len(uri) > 0 && uri[len(uri)-1] == '/' {
 		uri = uri[:len(uri)-1]
 	}
-	params := map[string]string{}
+	params := map[string]interface{}{}
 	way := urls
 	for _, part := range bytes.Split(uri, []byte{'/'}) {
 		value, exist := way.paths[string(part)]
