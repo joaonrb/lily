@@ -47,7 +47,7 @@ func TestMain(m *testing.M) {
 
 	var (
 		controller     IController = &DummyController{}
-		base           IController     = &BaseController{}
+		base           IController = &BaseController{}
 		jsonController IController = &JsonController{}
 	)
 

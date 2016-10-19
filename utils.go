@@ -6,7 +6,6 @@ package lily
 
 import (
 	"bufio"
-	"github.com/valyala/fasthttp"
 	"io"
 	"math/rand"
 	"os"
@@ -101,11 +100,11 @@ func GenerateBase64String(n int) string {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Mock the request and return a response
-func MockRequest(method, path string) *fasthttp.RequestCtx {
-	controller, args := getController([]byte(path))
-	r := fasthttp.RequestHeader{}
-	r.SetMethod(method)
-	ctx := &fasthttp.RequestCtx{Request: fasthttp.Request{Header: r}}
-	controller.Handle(ctx, args)
-	return ctx
-}
+//func MockRequest(method, path string) *fasthttp.RequestCtx {
+//	controller, args := getController([]byte(path))
+//	r := fasthttp.RequestHeader{}
+//	r.SetMethod(method)
+//	ctx := &fasthttp.RequestCtx{Request: fasthttp.Request{Header: r}}
+//	controller.Handle(ctx, args)
+//	return ctx
+//}
