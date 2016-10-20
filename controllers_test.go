@@ -56,7 +56,7 @@ func TestController(t *testing.T) {
 // Test a controller implementation
 func TestDummyController(t *testing.T) {
 	request := &fasthttp.Request{}
-	request.SetRequestURI("http://127.0.0.1:3333/ass")
+	request.SetRequestURI("http://127.0.0.1:3333/ass?test_param=t")
 	request.Header.SetMethod("GET")
 	response := &fasthttp.Response{}
 	err := fasthttp.DoTimeout(request, response, 10*time.Second)
