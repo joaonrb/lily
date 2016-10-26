@@ -5,6 +5,7 @@
 package lily
 
 import (
+	"errors"
 	"fmt"
 	"github.com/op/go-logging"
 	"io"
@@ -12,7 +13,6 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"errors"
 )
 
 var log = logging.MustGetLogger("lily")
@@ -27,23 +27,23 @@ const (
 
 const (
 	CONSOLE = "console" // console logging
-	FILE = "file"    // file Logging
+	FILE    = "file"    // file Logging
 )
 
 const (
 	CRITICAL = "critical" // critical level
-	ERROR = "error"    // error level
-	WARNING = "warning"  // warning level
-	INFO = "info"     // info level
-	DEBUG = "debug"    // debug level
+	ERROR    = "error"    // error level
+	WARNING  = "warning"  // warning level
+	INFO     = "info"     // info level
+	DEBUG    = "debug"    // debug level
 )
 
 // Log default settings
 const (
-	defaultLoggerType = "console"
-	defaultLoggerPath = ""
+	defaultLoggerType   = "console"
+	defaultLoggerPath   = ""
 	defaultLoggerFormat = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
-	defaultLoggerLevel = INFO
+	defaultLoggerLevel  = INFO
 )
 
 var (
@@ -57,9 +57,9 @@ var (
 	}
 	defaultLogger = []map[string]interface{}{
 		{
-			"type": defaultLoggerType,
+			"type":   defaultLoggerType,
 			"format": defaultLoggerFormat,
-			"level": defaultLoggerLevel,
+			"level":  defaultLoggerLevel,
 		},
 	}
 )
@@ -121,13 +121,17 @@ func LoadLogger() error {
 		}
 		logger := logging.NewLogBackend(out, "", 0)
 		format, ok := loggerSettings["format"].(string)
-		if !ok { format = defaultLoggerFormat }
+		if !ok {
+			format = defaultLoggerFormat
+		}
 		beFormatter := logging.NewBackendFormatter(logger, logging.MustStringFormatter(format))
 		beLevel := logging.AddModuleLevel(beFormatter)
 
 		// Set Level
 		level, ok := loggerSettings["level"].(string)
-		if !ok { level = defaultLoggerLevel }
+		if !ok {
+			level = defaultLoggerLevel
+		}
 		lowerCaseLevel := strings.ToLower(level)
 		levelNumber := LOGGING_LEVELS[lowerCaseLevel]
 		beLevel.SetLevel(levelNumber, "")
@@ -146,7 +150,7 @@ type RotatoryWriter struct {
 
 // Open the writer
 func OpenRotatoryWriter(path string) io.Writer {
-	out, err := os.OpenFile(path, os.O_CREATE | os.O_WRONLY | os.O_APPEND, loggerPermissions)
+	out, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 	if err != nil {
 		panic(
 			fmt.Errorf(
@@ -172,7 +176,7 @@ func (writer *RotatoryWriter) Write(p []byte) (n int, err error) {
 	if writer.doRotation {
 		writer.doRotation = false
 		writer.file.Close()
-		out, err := os.OpenFile(writer.filePath, os.O_CREATE | os.O_WRONLY | os.O_APPEND, loggerPermissions)
+		out, err := os.OpenFile(writer.filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, loggerPermissions)
 		if err != nil {
 			panic(
 				fmt.Errorf(
