@@ -44,7 +44,9 @@ func TestController(t *testing.T) {
 		}
 
 		// HEAD method doesn't have body
-		if method == "HEAD" { continue }
+		if method == "HEAD" {
+			continue
+		}
 
 		body := string(response.Body())
 		if body != fasthttp.StatusMessage(fasthttp.StatusMethodNotAllowed) {

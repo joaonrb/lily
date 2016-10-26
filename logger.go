@@ -1,11 +1,11 @@
-package lily
-
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
+package lily
 
 import (
+	"errors"
 	"fmt"
 	"github.com/op/go-logging"
 	"io"
@@ -42,7 +42,7 @@ const (
 const (
 	defaultLoggerType   = "console"
 	defaultLoggerPath   = ""
-	defaultLoggerLayout = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
+	defaultLoggerFormat = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
 	defaultLoggerLevel  = INFO
 )
 
@@ -54,6 +54,13 @@ var (
 		WARNING:  logging.WARNING,
 		INFO:     logging.INFO,
 		DEBUG:    logging.DEBUG,
+	}
+	defaultLogger = []map[string]interface{}{
+		{
+			"type":   defaultLoggerType,
+			"format": defaultLoggerFormat,
+			"level":  defaultLoggerLevel,
+		},
 	}
 )
 
@@ -88,27 +95,50 @@ func Debug(message string, args ...interface{}) {
 }
 
 // Load logger
-func LoadLogger(loggers []SLogger) {
+func LoadLogger() error {
 	var out io.Writer
-	goLoggers := make([]logging.Backend, 0)
+	var loggers []map[string]interface{}
+	value, ok := Settings["loggers"]
+	if !ok {
+		loggers = defaultLogger
+	} else if loggers, ok = value.([]map[string]interface{}); !ok {
+		loggers = defaultLogger
+	}
+
+	goLoggers := make([]logging.Backend, 1)
 	for _, loggerSettings := range loggers {
-		switch loggerSettings.Type {
+		switch loggerSettings["type"].(string) {
 		case CONSOLE:
 			out = os.Stdout
 		case FILE:
-			out = OpenRotatoryWriter(loggerSettings.Path)
+			if path, ok := loggerSettings["path"].(string); ok {
+				out = OpenRotatoryWriter(path)
+			} else {
+				return errors.New("Path is not defined for type file.")
+			}
+		default:
+			return errors.New("Type is not defined or is wrong.")
 		}
 		logger := logging.NewLogBackend(out, "", 0)
-		beFormatter := logging.NewBackendFormatter(logger, logging.MustStringFormatter(loggerSettings.Layout))
+		format, ok := loggerSettings["format"].(string)
+		if !ok {
+			format = defaultLoggerFormat
+		}
+		beFormatter := logging.NewBackendFormatter(logger, logging.MustStringFormatter(format))
 		beLevel := logging.AddModuleLevel(beFormatter)
 
 		// Set Level
-		lowerCaseLevel := strings.ToLower(loggerSettings.Level)
+		level, ok := loggerSettings["level"].(string)
+		if !ok {
+			level = defaultLoggerLevel
+		}
+		lowerCaseLevel := strings.ToLower(level)
 		levelNumber := LOGGING_LEVELS[lowerCaseLevel]
 		beLevel.SetLevel(levelNumber, "")
 		goLoggers = append(goLoggers, beLevel)
 	}
 	log.SetBackend(logging.MultiLogger(goLoggers...))
+	return nil
 }
 
 // Rotate writer
