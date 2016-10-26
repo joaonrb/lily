@@ -1,14 +1,19 @@
-package lily
-
 // Author João Nuno.
 //
 // joaonrb@gmail.com
 //
+package lily
 
-// Settings for logger
-type SLogger struct {
-	Type   string `yaml:"type,omitempty"`
-	Layout string `yaml:"layout,omitempty"`
-	Path   string `yaml:"path,omitempty"`
-	Level  string `yaml:"level,omitempty"`
+import (
+	"gopkg.in/yaml.v2"
+)
+
+var Settings = map[string]interface{}{}
+
+func SetSettings(path string) error {
+	err := yaml.Unmarshal([]byte(path), Settings)
+	if err != nil {
+		return err
+	}
+	return nil
 }
