@@ -57,6 +57,7 @@ type IController interface {
 	Handle(*fasthttp.RequestCtx, map[string]interface{})
 	Start(*fasthttp.RequestCtx, map[string]interface{}) (bool, *Response)
 	Finish(*fasthttp.RequestCtx, map[string]interface{}, *Response)
+	Close(*fasthttp.RequestCtx, map[string]interface{}, *Response)
 	Get(*fasthttp.RequestCtx, map[string]interface{}) *Response
 	Head(*fasthttp.RequestCtx, map[string]interface{}) *Response
 	Post(*fasthttp.RequestCtx, map[string]interface{}) *Response
@@ -85,6 +86,7 @@ func (c *BaseController) Handle(ctx *fasthttp.RequestCtx, args map[string]interf
 		}
 		c.This.Finish(ctx, args, response)
 		sendResponse(ctx, response)
+		c.This.Close(ctx, args, response)
 	}()
 	if !ok {
 		return
@@ -112,8 +114,12 @@ func (c *BaseController) Start(*fasthttp.RequestCtx, map[string]interface{}) (bo
 	return true, nil
 }
 
-// Close the response. Add any header or so.
+// Run code on the response. Add any header or so.
 func (c *BaseController) Finish(request *fasthttp.RequestCtx, args map[string]interface{}, response *Response) {
+}
+
+// Close the response. Run after the response is delivered
+func (c *BaseController) Close(request *fasthttp.RequestCtx, args map[string]interface{}, response *Response) {
 }
 
 // Get method implementation
