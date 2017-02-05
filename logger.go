@@ -55,8 +55,8 @@ var (
 		INFO:     logging.INFO,
 		DEBUG:    logging.DEBUG,
 	}
-	defaultLogger = []map[string]interface{}{
-		{
+	defaultLogger = []interface{} {
+		map[string]interface{} {
 			"type":   defaultLoggerType,
 			"format": defaultLoggerFormat,
 			"level":  defaultLoggerLevel,
@@ -97,16 +97,18 @@ func Debug(message string, args ...interface{}) {
 // Load logger
 func LoadLogger() error {
 	var out io.Writer
-	var loggers []map[string]interface{}
+	var loggers []interface{}
+
 	value, ok := Settings["loggers"]
 	if !ok {
 		loggers = defaultLogger
-	} else if loggers, ok = value.([]map[string]interface{}); !ok {
+	} else if loggers, ok = value.([]interface{}); !ok {
 		loggers = defaultLogger
 	}
 
 	goLoggers := []logging.Backend{}
-	for _, loggerSettings := range loggers {
+	for _, loggerInterface := range loggers {
+		loggerSettings := loggerInterface.(map[interface{}]interface{})
 		switch loggerSettings["type"].(string) {
 		case CONSOLE:
 			out = os.Stdout
