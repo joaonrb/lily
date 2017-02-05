@@ -105,7 +105,7 @@ func LoadLogger() error {
 		loggers = defaultLogger
 	}
 
-	goLoggers := make([]logging.Backend, 1)
+	goLoggers := []logging.Backend{}
 	for _, loggerSettings := range loggers {
 		switch loggerSettings["type"].(string) {
 		case CONSOLE:
