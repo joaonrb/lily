@@ -42,7 +42,7 @@ const (
 const (
 	defaultLoggerType   = "console"
 	defaultLoggerPath   = ""
-	defaultLoggerFormat = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
+	defaultLoggerFormat = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile}%{color:reset} %{message}"
 	defaultLoggerLevel  = INFO
 )
 
