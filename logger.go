@@ -42,7 +42,7 @@ const (
 const (
 	defaultLoggerType   = "console"
 	defaultLoggerPath   = ""
-	defaultLoggerFormat = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile} %{message}"
+	defaultLoggerFormat = "%{color}%{level:.4s} %{time:2006-01-02 15:04:05.000} %{shortfile}%{color:reset} %{message}"
 	defaultLoggerLevel  = INFO
 )
 
@@ -55,8 +55,8 @@ var (
 		INFO:     logging.INFO,
 		DEBUG:    logging.DEBUG,
 	}
-	defaultLogger = []map[string]interface{}{
-		{
+	defaultLogger = []interface{} {
+		map[string]interface{} {
 			"type":   defaultLoggerType,
 			"format": defaultLoggerFormat,
 			"level":  defaultLoggerLevel,
@@ -97,16 +97,18 @@ func Debug(message string, args ...interface{}) {
 // Load logger
 func LoadLogger() error {
 	var out io.Writer
-	var loggers []map[string]interface{}
+	var loggers []interface{}
+
 	value, ok := Settings["loggers"]
 	if !ok {
 		loggers = defaultLogger
-	} else if loggers, ok = value.([]map[string]interface{}); !ok {
+	} else if loggers, ok = value.([]interface{}); !ok {
 		loggers = defaultLogger
 	}
 
-	goLoggers := make([]logging.Backend, 1)
-	for _, loggerSettings := range loggers {
+	goLoggers := []logging.Backend{}
+	for _, loggerInterface := range loggers {
+		loggerSettings := loggerInterface.(map[interface{}]interface{})
 		switch loggerSettings["type"].(string) {
 		case CONSOLE:
 			out = os.Stdout
