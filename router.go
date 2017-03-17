@@ -17,31 +17,42 @@ import (
 
 var (
 	urls = &route{paths: map[string]*route{}}
+
+	SLASH_SEP = []byte("/")
 )
 
 type route struct {
 	next       *route
 	paths      map[string]*route
 	regex      *regexp.Regexp
-	controller IController
+	controller string
 }
 
 func getController(uri []byte) (IController, map[string]interface{}) {
-	if uri[0] == '/' {
+	params := map[string]interface{}{}
+	way := urls
+
+	if len(uri) > 0 && uri[0] == '/' {
 		uri = uri[1:]
 	}
 	if len(uri) > 0 && uri[len(uri)-1] == '/' {
 		uri = uri[:len(uri)-1]
 	}
-	params := map[string]interface{}{}
-	way := urls
-	for _, part := range bytes.Split(uri, []byte{'/'}) {
+	var part []byte
+	rest := uri
+	for {
+		i := bytes.Index(rest, SLASH_SEP)
+		if i == -1 {
+			part = rest
+		} else {
+			part = rest[:i]
+		}
 		value, exist := way.paths[string(part)]
 		switch {
 		case exist:
 			way = value
 		case way.regex != nil:
-			match := way.regex.FindSubmatch(part)
+			match := way.regex.FindSubmatch(rest)
 			if len(match) > 0 {
 				params[way.regex.SubexpNames()[1]] = string(match[0])
 				way = way.next
@@ -51,13 +62,15 @@ func getController(uri []byte) (IController, map[string]interface{}) {
 		default:
 			return nil, nil
 		}
+		if i == -1 {
+			break
+		}
 	}
-	return way.controller, params
+	return controllers[way.controller], params
 }
 
 // Register an controller to a path
-func Url(uri string, controller IController) error {
-	controller.Init(controller)
+func Url(uri string, controller string) error {
 	if uri[0] == '/' {
 		uri = uri[1:]
 	}

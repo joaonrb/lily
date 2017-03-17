@@ -33,7 +33,8 @@ func TestRouterRouteRegexPath(t *testing.T) {
 
 // TestRouterUrlError test route with parameters
 func TestRouterUrlError(t *testing.T) {
-	err := Url("/:(?P<name>^\\[a-zA-Z0-9]+)$", &BaseController{})
+
+	err := Url("/:(?P<name>^\\[a-zA-Z0-9]+)$", "test_name")
 	if err != nil {
 		t.Error("Error is expected in malformed url")
 	}
