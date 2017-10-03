@@ -4,5 +4,7 @@
 
 /*
 Package router implements the router system for http applications.
+
+Note: Add a #(hashtag) to the end of the path
  */
 package router

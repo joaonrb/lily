@@ -7,7 +7,5 @@ owners:
     homepage: httpa://joaonrb.ninja/
 imports:
 - package: github.com/valyala/fasthttp
-  version: ^20160617.0.0
 - package: github.com/op/go-logging
-  version: 970db520ece77730c7e4724c61121037378659d9
 - package: gopkg.in/yaml.v2

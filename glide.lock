@@ -1,24 +1,23 @@
 hash: 7623b4ed6ea064d6dc1addb8e6c2fd7aea523dd48ae4b5567ce9d2b2db6db340
-updated: 2016-10-22T19:01:46.511908698+01:00
+updated: 2017-09-16T17:44:46.930532633+01:00
 imports:
 - name: github.com/klauspost/compress
-  version: 1e658061989f47658e69492cf63a839630a25eba
+  version: f3dce52e0576655d55fd69e74b63da96ad1108f3
   subpackages:
   - flate
   - gzip
   - zlib
 - name: github.com/klauspost/cpuid
-  version: 09cded8978dc9e80714c4d85b0322337b0a1e5e0
-- name: github.com/klauspost/crc32
-  version: cb6bfca970f6908083f26f39a79009d608efd5cd
+  version: ae7887de9fa5d2db4eaa8174a7eff2c1ac00f2da
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
 - name: github.com/valyala/bytebufferpool
   version: e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7
 - name: github.com/valyala/fasthttp
-  version: cd7c1dafbc8e04e779e011bf06ee28e730780098
+  version: 5116aa64e038d917b3916a74da456c00643ff1e6
   subpackages:
   - fasthttputil
+  - stackless
 - name: gopkg.in/yaml.v2
-  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+  version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
 testImports: []
