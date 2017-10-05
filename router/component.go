@@ -24,6 +24,7 @@ type node struct {
 
 func (n *node) Resolve(context interface{}) interface{} {
 	path := context.([]byte)
+	//fmt.Println(string(context.([]byte)), string(n.char), n.nodes)
 	return n.nodes[path[0]-charShift].Resolve(path[1:])
 }
 
@@ -117,14 +118,22 @@ func add(self lily.Component, path []byte, treasure lily.Component) {
 
 func getNode(self lily.Component,
 	path []byte, treasure lily.Component) (lily.Component, []byte) {
-
-	switch path[0] {
+    char, rest := path[0], path[1:]
+	switch char {
 	case scapeChar:
-		return &end{char: path[0], treasure: treasure}, nil
+		return &end{char: char, treasure: treasure}, nil
 	case specialChar:
-		return initRegex(path[1:])
+		return initRegex(rest)
 	default:
-		return &node{char: path[0], nodes: initNodes()}, path[1:]
+		var n lily.Component
+		switch self := self.(type) {
+		case *node:
+			n = self.nodes[char-charShift]
+		}
+		if n != EmptyComponentException {
+			return n, rest
+		}
+		return &node{char: char, nodes: initNodes()}, rest
 	}
 }
 

@@ -11,6 +11,10 @@ var simpleURLPathSamples = []string{
 	"/foe",
 	"/foe/john-doe",
 	"/foe/john-doe/",
+	"/john-doe",
+	"/john-doe/",
+	"/john-doe/foe",
+	"/john-doe/foe/",
 }
 
 type mockComponent struct {
