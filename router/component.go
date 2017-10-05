@@ -13,6 +13,8 @@ const (
 	specialChar       = 64  // Character @ 36  // Character #
 	scapeChar         = 63  // Character ? 10  // Character \n
 	regexParserFormat = 96  // Character `
+	regexPrefix       = 94  // Character ^
+	regexSuffix       = 36  // Character $
 )
 
 // Node handles a step to the goal
@@ -27,10 +29,6 @@ func (n *node) Resolve(context interface{}) interface{} {
 	return n.nodes[path[0]-charShift].Resolve(path[1:])
 }
 
-func (n *node) Add(path []byte, treasure lily.Component) {
-	add(append(path, scapeChar), n, treasure)
-}
-
 func (n *node) String() string {
 	return fmt.Sprintf("Route node '%s'", string(n.char))
 }
@@ -42,7 +40,6 @@ type regexContainer struct {
 
 type regexNode struct {
 	node
-	next  lily.Component
 	regex []*regexContainer
 }
 
@@ -53,14 +50,10 @@ func (rn *regexNode) Resolve(context interface{}) interface{} {
 		match := regex.regex.Find(path)
 		if len(match) != 0 {
 			// TODO: add parameters to the result. Wrap them on struct
-			return regex.component.Resolve(path[len(match)-charShift:])
+			return regex.component.Resolve(path[len(match):])
 		}
 	}
 	return rn.node.Resolve(path)
-}
-
-func (rn *regexNode) Add(path []byte, treasure lily.Component) {
-	add(append(path, scapeChar), rn, treasure)
 }
 
 func (rn *regexNode) String() string {
@@ -84,20 +77,24 @@ func (e *end) String() string {
 
 // Root is the first node for a route
 type Root struct{
-	node
+	lily.Component
 }
 
 func (r *Root) Resolve(context interface{}) interface{} {
 	path := context.([]byte)
-	return r.node.Resolve(append(path, scapeChar))
+	return r.Component.Resolve(append(path, scapeChar))
 }
 
 func (*Root) String() string {
 	return fmt.Sprintf("Route root")
 }
 
+func (r *Root) Add(path []byte, treasure lily.Component) {
+	r.Component = add(append(path, scapeChar), r.Component, treasure)
+}
+
 func New() *Root {
-	return &Root{node{char: charShift, nodes: initNodes()}}
+	return &Root{&node{char: charShift, nodes: initNodes()}}
 }
 
 func initNodes() [charAmount]lily.Component {
@@ -115,12 +112,11 @@ func add(path []byte, self, c lily.Component) lily.Component {
 		))
 	}
 	newNode := getNode(path, self, c)
-	switch self := self.(type) {
-	case *node:
-		self.nodes[path[0]-charShift] = newNode
+	switch newNode := newNode.(type) {
 	case *regexNode:
-		self.next = newNode
+		return newNode
 	}
+	self.(*node).nodes[path[0]-charShift] = newNode
 	return self
 }
 
@@ -144,9 +140,10 @@ func getNode(path []byte, self, c lily.Component) lily.Component {
 	}
 }
 
-func initRegex(path []byte, self, c lily.Component, ) lily.Component {
+func initRegex(path []byte, self, c lily.Component) lily.Component {
 	i := bytes.IndexByte(path[1:], regexParserFormat)
-	regex, rest := path[1:i-1], path[i+1:]
+	regex := append([]byte{regexPrefix}, append(path[1:i+1], regexSuffix)...)
+	rest := path[i+2:]
 	newNode := getNode(rest, self, c)
 	switch self := self.(type) {
 	case *node:

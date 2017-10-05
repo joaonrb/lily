@@ -20,7 +20,9 @@ var (
 		"/john-doe/foe",
 		"/john-doe/foe/",
 	}
-
+	regexURLPathSamples = map[string][]string {
+		"/@`(?P<name>.*)`": {"/joao", "/catia", "/vanessa"},
+	}
 )
 
 type mockComponent struct {
@@ -37,7 +39,12 @@ func logMemory()  {
 		for {
 			var m runtime.MemStats
 			runtime.ReadMemStats(&m)
-			log.Printf("\nAlloc = %vKB\nTotalAlloc = %vKB\nSys = %v\nNumGC = %v\n\n", m.Alloc / 1024, m.TotalAlloc / 1024, m.Sys / 1024, m.NumGC)
+			log.Printf("\n" +
+				"Alloc = %vKB\n" +
+				"TotalAlloc = %vKB" +
+				"\nSys = %v\n" +
+				"NumGC = %v\n\n", m.Alloc / 1024, m.TotalAlloc / 1024,
+				m.Sys / 1024, m.NumGC)
 			time.Sleep(100*time.Millisecond)
 		}
 	}()
@@ -63,15 +70,18 @@ func TestRouterSimpleURLPath(t *testing.T) {
 // TestRouterSimpleURLPath test simple path
 func TestRouterRegexURLPath(t *testing.T) {
 	router := New()
-	for _, path := range regexURLPathSamples {
+	for path, _ := range regexURLPathSamples {
 		router.Add([]byte(path), &mockComponent{result: path})
 	}
-	for _, path := range regexURLPathSamples {
-		result := router.Resolve([]byte(path))
-		if result.(lily.Component).Resolve(nil) != path {
-			t.Errorf("Router didn't return the expected path: path(%s)" +
-				" is not result(%s)", path,
-				result.(lily.Component).Resolve(nil))
+	for _, paths := range regexURLPathSamples {
+		for _, path := range paths {
+			result := router.Resolve([]byte(path))
+			if result.(lily.Component).Resolve(nil) != path {
+				t.Errorf("Router didn't return the expected path: " +
+					"path(%s) is not result(%s)", path,
+					result.(lily.Component).Resolve(nil))
+			}
 		}
+
 	}
 }
