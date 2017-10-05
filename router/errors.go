@@ -20,3 +20,11 @@ func (err *e) Error() string {
 func (err *e) Resolve(_ interface{}) interface{} {
 	return err
 }
+
+type InvalidCharacterException struct {
+	e
+}
+
+func ThrowInvalidCharacterException(message string) *InvalidCharacterException {
+	return &InvalidCharacterException{e{message}}
+}
