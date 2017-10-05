@@ -30,9 +30,10 @@ func TestRouterSimpleURLPath(t *testing.T) {
 	}
 	for _, path := range simpleURLPathSamples {
 		result := router.Resolve([]byte(path))
-		if result.(mockComponent).result != path {
+		if result.(lily.Component).Resolve(nil) != path {
 			t.Errorf("Router didn't return the expected path: path(%s)" +
-			" is not result(%s)", path, result.(mockComponent).result)
+			" is not result(%s)", path,
+			result.(lily.Component).Resolve(nil))
 		}
 	}
 }
