@@ -1,28 +1,23 @@
 package router
 
 import (
+	"bytes"
 	"github.com/joaonrb/lily"
 	"regexp"
-	"bytes"
 )
 
 const (
 	charAmount        = 95
 	charShift         = 32
-	specialChar       = 36  // Character #
-	scapeChar         = 10  // Character \n
-	regexParserFormat = 96  // Character `
+	specialChar       = 36 // Character #
+	scapeChar         = 10 // Character \n
+	regexParserFormat = 96 // Character `
 )
-
-
-//  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefgh
-// ijklmnopqrstuvwxyz{|}~
-
 
 // Node handles a step to the goal
 type node struct {
 	lily.Component
-    nodes  [charAmount]lily.Component
+	nodes [charAmount]lily.Component
 }
 
 func (n *node) Resolve(path []byte) interface{} {
@@ -30,15 +25,14 @@ func (n *node) Resolve(path []byte) interface{} {
 }
 
 func (n *node) Add(path []byte, treasure lily.Component) {
-    add(n, append(path, scapeChar), treasure)
+	add(n, append(path, scapeChar), treasure)
 }
-
 
 type regexNode struct {
 	node
-	name   string
-	next   lily.Component
-	regex  *regexp.Regexp
+	name  string
+	next  lily.Component
+	regex *regexp.Regexp
 }
 
 func (rn *regexNode) Resolve(path []byte) interface{} {
@@ -65,10 +59,8 @@ func (e *end) Resolve(path []byte) lily.Component {
 	return e.treasure
 }
 
-
 // Root is the first node for a route
 type Root node
-
 
 func initNodes() [charAmount]lily.Component {
 	nodes := [charAmount]lily.Component{}
@@ -77,7 +69,6 @@ func initNodes() [charAmount]lily.Component {
 	}
 	return nodes
 }
-
 
 func add(self lily.Component, path []byte, treasure lily.Component) {
 	newNode, rest := getNode(path, treasure)
@@ -90,7 +81,6 @@ func add(self lily.Component, path []byte, treasure lily.Component) {
 	}
 }
 
-
 func getNode(path []byte, treasure lily.Component) (lily.Component, []byte) {
 	switch path[0] {
 	case scapeChar:
@@ -102,13 +92,12 @@ func getNode(path []byte, treasure lily.Component) (lily.Component, []byte) {
 	}
 }
 
-
 func initRegex(path []byte) (lily.Component, []byte) {
 	i := bytes.IndexByte(path[1:], regexParserFormat)
 	regex, rest := path[1:i-1], path[i+1:]
 	newNode := &regexNode{
-		node:node{nodes:initNodes()},
-		regex:regexp.MustCompile(string(regex)),
+		node:  node{nodes: initNodes()},
+		regex: regexp.MustCompile(string(regex)),
 	}
 	if len(newNode.regex.SubexpNames()) > 1 {
 		newNode.name = newNode.regex.SubexpNames()[1]
