@@ -3,13 +3,17 @@ package router
 import (
 	"github.com/joaonrb/lily"
 	"regexp"
+	"bytes"
 )
 
 const (
-	charAmount  = 95
-	charShift   = 32
-	specialChar = `#`
+	charAmount        = 95
+	charShift         = 32
+	specialChar       = 36  // Character #
+	scapeChar         = 10  // Character \n
+	regexParserFormat = 96  // Character `
 )
+
 
 //  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefgh
 // ijklmnopqrstuvwxyz{|}~
@@ -25,11 +29,15 @@ func (n *node) Resolve(path []byte) interface{} {
 	return n.nodes[path[0]-charShift].Resolve(path[1:])
 }
 
+func (n *node) Add(path []byte, treasure lily.Component) {
+    add(n, append(path, scapeChar), treasure)
+}
+
 
 type regexNode struct {
 	node
 	name   string
-	next   *node
+	next   lily.Component
 	regex  *regexp.Regexp
 }
 
@@ -43,12 +51,17 @@ func (rn *regexNode) Resolve(path []byte) interface{} {
 	return rn.node.Resolve(path)
 }
 
-// end holds the treasure in the end of the route
-type end struct {
-	treasure interface{}
+func (rn *regexNode) Add(path []byte, treasure lily.Component) {
+	add(rn, append(path, scapeChar), treasure)
 }
 
-func (e *end) Resolve(path []byte) interface{} {
+// end holds the treasure in the end of the route
+type end struct {
+	lily.Component
+	treasure lily.Component
+}
+
+func (e *end) Resolve(path []byte) lily.Component {
 	return e.treasure
 }
 
@@ -56,20 +69,49 @@ func (e *end) Resolve(path []byte) interface{} {
 // Root is the first node for a route
 type Root node
 
-//TODO: Finish this
-func (root *Root) Add(path []byte, treasure interface{}) error {
-	current := root
-	for i := 0; i < len(path); i++ {
-        char := path[i]
-        if char == specialChar {
 
-		}
+func initNodes() [charAmount]lily.Component {
+	nodes := [charAmount]lily.Component{}
+	for i := 0; i < charAmount; i++ {
+		nodes[i] = EmptyComponentException
+	}
+	return nodes
+}
+
+
+func add(self lily.Component, path []byte, treasure lily.Component) {
+	newNode, rest := getNode(path, treasure)
+	add(newNode, rest, treasure)
+	switch self := self.(type) {
+	case *node:
+		self.nodes[path[0]] = newNode
+	case *regexNode:
+		self.next = newNode
 	}
 }
 
 
-func initNodes(nodes [charAmount]lily.Component) {
-	for i := 0; i < charAmount; i++ {
-		nodes[i] = EmptyComponentException
+func getNode(path []byte, treasure lily.Component) (lily.Component, []byte) {
+	switch path[0] {
+	case scapeChar:
+		return &end{treasure: treasure}, path[1:]
+	case specialChar:
+		return initRegex(path[1:])
+	default:
+		return node{nodes: initNodes()}, path[1:]
 	}
+}
+
+
+func initRegex(path []byte) (lily.Component, []byte) {
+	i := bytes.IndexByte(path[1:], regexParserFormat)
+	regex, rest := path[1:i-1], path[i+1:]
+	newNode := &regexNode{
+		node:node{nodes:initNodes()},
+		regex:regexp.MustCompile(string(regex)),
+	}
+	if len(newNode.regex.SubexpNames()) > 1 {
+		newNode.name = newNode.regex.SubexpNames()[1]
+	}
+	return newNode, rest
 }
