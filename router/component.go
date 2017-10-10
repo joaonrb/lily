@@ -14,8 +14,10 @@ const (
 	scapeChar         = 63  // Character ? 10  // Character \n
 	regexParserFormat = 96  // Character `
 	regexPrefix       = 94  // Character ^
-	regexSuffix       = 36  // Character $
+	//regexSuffix       = 36  // Character $
 )
+
+var regexSuffix = []byte{91, 94, 63, 93}
 
 // Node handles a step to the goal
 type node struct {
@@ -50,7 +52,8 @@ func (rn *regexNode) Resolve(context interface{}) interface{} {
 		match := regex.regex.Find(path)
 		if len(match) != 0 {
 			// TODO: add parameters to the result. Wrap them on struct
-			return regex.component.Resolve(path[len(match):])
+			return regex.component.Resolve(path[len(match):]).(lily.Component).
+			Resolve(match)
 		}
 	}
 	return rn.node.Resolve(path)
@@ -142,7 +145,7 @@ func getNode(path []byte, self, c lily.Component) lily.Component {
 
 func initRegex(path []byte, self, c lily.Component) lily.Component {
 	i := bytes.IndexByte(path[1:], regexParserFormat)
-	regex := append([]byte{regexPrefix}, append(path[1:i+1], regexSuffix)...)
+	regex := append(append([]byte{regexPrefix}, path[1:i+1]...), regexSuffix...)
 	rest := path[i+2:]
 	newNode := getNode(rest, self, c)
 	switch self := self.(type) {

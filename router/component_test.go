@@ -27,11 +27,16 @@ var (
 
 type mockComponent struct {
 	lily.Component
-	result string
+	result []string
 }
 
 func (mock *mockComponent) Resolve(context interface{}) interface{} {
-	return mock.result
+	switch context := context.(type) {
+	case []byte:
+		mock.result = append(mock.result, string(context))
+		return mock
+	}
+	return mock.result[len(mock.result)-1]
 }
 
 func logMemory()  {
@@ -55,7 +60,7 @@ func logMemory()  {
 func TestRouterSimpleURLPath(t *testing.T) {
 	router := New()
 	for _, path := range simpleURLPathSamples {
-		router.Add([]byte(path), &mockComponent{result: path})
+		router.Add([]byte(path), &mockComponent{result: []string{path}})
 	}
 	for _, path := range simpleURLPathSamples {
 		result := router.Resolve([]byte(path))
@@ -71,14 +76,14 @@ func TestRouterSimpleURLPath(t *testing.T) {
 func TestRouterRegexURLPath(t *testing.T) {
 	router := New()
 	for path, _ := range regexURLPathSamples {
-		router.Add([]byte(path), &mockComponent{result: path})
+		router.Add([]byte(path), &mockComponent{result: nil})
 	}
 	for _, paths := range regexURLPathSamples {
 		for _, path := range paths {
 			result := router.Resolve([]byte(path))
-			if result.(lily.Component).Resolve(nil) != path {
+			if result.(lily.Component).Resolve(nil) != path[1:] {
 				t.Errorf("Router didn't return the expected path: " +
-					"path(%s) is not result(%s)", path,
+					"expected(%s) is not result(%s)", path[1:],
 					result.(lily.Component).Resolve(nil))
 			}
 		}
