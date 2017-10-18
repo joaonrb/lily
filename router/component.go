@@ -2,18 +2,18 @@ package router
 
 import (
 	"bytes"
-	"github.com/joaonrb/lily"
-	"regexp"
 	"fmt"
+	"regexp"
+	"github.com/joaonrb/lily"
 )
 
 const (
-	charAmount        = 78  // 119 // 95
-	charShift         = 45  // 10  // 32
-	specialChar       = 64  // Character @ 36  // Character #
-	scapeChar         = 63  // Character ? 10  // Character \n
-	regexParserFormat = 96  // Character `
-	regexPrefix       = 94  // Character ^
+	charAmount        = 78 // 119 // 95
+	charShift         = 45 // 10  // 32
+	specialChar       = 64 // Character @ 36  // Character #
+	scapeChar         = 63 // Character ? 10  // Character \n
+	regexParserFormat = 96 // Character `
+	regexPrefix       = 94 // Character ^
 	//regexSuffix       = 36  // Character $
 )
 
@@ -45,6 +45,7 @@ type regexNode struct {
 	regex []*regexContainer
 }
 
+// search route first then regex
 func (rn *regexNode) Resolve(context interface{}) interface{} {
 	path := context.([]byte)
 	// TODO: recycle this match with sync.Pool
@@ -52,8 +53,8 @@ func (rn *regexNode) Resolve(context interface{}) interface{} {
 		match := regex.regex.Find(path)
 		if len(match) != 0 {
 			// TODO: add parameters to the result. Wrap them on struct
-			return regex.component.Resolve(path[len(match):]).(lily.Component).
-			Resolve(match)
+			return regex.component.Resolve(path[len(match):]).
+			(lily.Component).Resolve(match)
 		}
 	}
 	return rn.node.Resolve(path)
@@ -79,12 +80,13 @@ func (e *end) String() string {
 }
 
 // Root is the first node for a route
-type Root struct{
+type Root struct {
 	lily.Component
 }
 
 func (r *Root) Resolve(context interface{}) interface{} {
 	path := context.([]byte)
+
 	return r.Component.Resolve(append(path, scapeChar))
 }
 
@@ -93,7 +95,7 @@ func (*Root) String() string {
 }
 
 func (r *Root) Add(path []byte, treasure lily.Component) {
-	r.Component = add(append(path, scapeChar), r.Component, treasure)
+	add(append(path, scapeChar), r.Component, treasure)
 }
 
 func New() *Root {
@@ -115,27 +117,29 @@ func add(path []byte, self, c lily.Component) lily.Component {
 		))
 	}
 	newNode := getNode(path, self, c)
-	switch newNode := newNode.(type) {
-	case *regexNode:
-		return newNode
+	if path[0] == specialChar {
+		switch self := self.(type) {
+		case *regexNode:
+			self.regex = append(self.regex, newNode.(*regexNode).regex[0])
+		case *node:
+			newNode.(*regexNode).node.nodes = self.nodes
+			return newNode
+		}
+	} else {
+		self.(*node).nodes[path[0]-charShift] = newNode
 	}
-	self.(*node).nodes[path[0]-charShift] = newNode
 	return self
 }
 
 func getNode(path []byte, self, c lily.Component) lily.Component {
-    char, rest := path[0], path[1:]
+	char, rest := path[0], path[1:]
 	switch char {
 	case scapeChar:
 		return &end{char: char, component: c}
 	case specialChar:
-		return initRegex(rest, self, c)
+		return initRegex(rest, c)
 	default:
-		var n lily.Component
-		switch self := self.(type) {
-		case *node:
-			n = self.nodes[char-charShift]
-		}
+		n := self.(*node).nodes[char-charShift]
 		if n != EmptyComponentException {
 			return add(rest, n, c)
 		}
@@ -143,28 +147,19 @@ func getNode(path []byte, self, c lily.Component) lily.Component {
 	}
 }
 
-func initRegex(path []byte, self, c lily.Component) lily.Component {
+func initRegex(path []byte, c lily.Component) lily.Component {
 	i := bytes.IndexByte(path[1:], regexParserFormat)
 	regex := append(append([]byte{regexPrefix}, path[1:i+1]...), regexSuffix...)
 	rest := path[i+2:]
-	newNode := getNode(rest, self, c)
-	switch self := self.(type) {
-	case *node:
-		return &regexNode{
-			node:  *self,
-			regex: []*regexContainer{
-				&regexContainer{
-					regexp.MustCompile(string(regex)),
-					newNode,
-				},
+	newNode := &regexNode {
+		node: node{nodes: initNodes()},
+		regex: []*regexContainer{
+			&regexContainer{
+				regexp.MustCompile(string(regex)),
+				&node{nodes: initNodes()},
 			},
-		}
-	case *regexNode:
-		 self.regex = append(self.regex, &regexContainer{
-			regexp.MustCompile(string(regex)),
-			newNode,
-		})
-		return self
+		},
 	}
-	return nil
+	add(rest, newNode.regex[len(newNode.regex)-1].component, c)
+	return newNode
 }
