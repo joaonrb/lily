@@ -1,4 +1,4 @@
-package lily
+package old
 
 // Author João Nuno.
 //
@@ -51,9 +51,13 @@ func TestMain(m *testing.M) {
 		jsonController IController = &JsonController{}
 	)
 
-	Url("/", jsonController)
-	Url("/base/", base)
-	Url("/:(?P<name>^[a-zA-Z0-9]+)$", controller)
+	Register("main", jsonController)
+	Register("base", base)
+	Register("regex", controller)
+
+	Url("/", "main")
+	Url("/base/", "base")
+	Url("/:(?P<name>^[a-zA-Z0-9]+)$", "regex")
 
 	server := fasthttp.Server{Handler: CoreHandler, Name: "Dummy Server 0.69 Alpha"}
 	go server.ListenAndServe("0.0.0.0:3333")

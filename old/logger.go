@@ -2,7 +2,7 @@
 //
 // joaonrb@gmail.com
 //
-package lily
+package old
 
 import (
 	"errors"
@@ -55,8 +55,8 @@ var (
 		INFO:     logging.INFO,
 		DEBUG:    logging.DEBUG,
 	}
-	defaultLogger = []interface{} {
-		map[string]interface{} {
+	defaultLogger = []interface{}{
+		map[string]interface{}{
 			"type":   defaultLoggerType,
 			"format": defaultLoggerFormat,
 			"level":  defaultLoggerLevel,

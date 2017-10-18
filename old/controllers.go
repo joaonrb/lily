@@ -1,4 +1,4 @@
-package lily
+package old
 
 // Author João Nuno.
 //
@@ -9,6 +9,13 @@ import (
 	"bytes"
 	"github.com/valyala/fasthttp"
 )
+
+var controllers = map[string]IController{}
+
+func Register(name string, controller IController) {
+	controller.Init(controller)
+	controllers[name] = controller
+}
 
 type Response struct {
 	Status  int
